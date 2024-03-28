@@ -1,0 +1,102 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Patient {
+  id: Float!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  gender: String!
+  birthdate: DateTime!
+  phone: String!
+  adress: String!
+  forecast: String!
+  enabled: Boolean!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Secretary {
+  id: Float!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Medic {
+  id: Float!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  specialty: String!
+  enabled: Boolean!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Admin {
+  id: Float!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Appointment {
+  id: Float!
+  startTime: DateTime!
+  endTime: DateTime!
+  state: String!
+  confirmed: Boolean!
+  completed: Boolean!
+  type: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Box {
+  id: Float!
+  name: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Branch {
+  id: Float!
+  name: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Shift {
+  id: Float!
+  startTime: DateTime!
+  endTime: DateTime!
+  blocked: Boolean!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Query {
+  patients: Patient!
+  medics: Medic!
+  secretaries: Secretary!
+  admins: Admin!
+  appointments: Appointment!
+  boxes: Box!
+  branches: Branch!
+  shifts: Shift!
+}
