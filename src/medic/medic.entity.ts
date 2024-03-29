@@ -23,12 +23,20 @@ enum medicSpecialty {
   INTERNALMEDICINE = 'Medicina Interna',
 }
 
+enum medicRol {
+  ROL = 'Médico',
+}
+
 @ObjectType('Medic')
 @Entity('medic')
 export class Medic implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Field()
+  @Column({ type: 'enum', enum: medicRol, default: medicRol.ROL })
+  role: medicRol;
 
   @Field()
   @Column()

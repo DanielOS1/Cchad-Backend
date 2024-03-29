@@ -22,12 +22,20 @@ enum patientGender {
   FEMALE = 'femenino',
 }
 
+enum patientRol {
+  ROL = 'Paciente',
+}
+
 @ObjectType('Patient')
 @Entity('patient')
 export class Patient implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Field()
+  @Column({ type: 'enum', enum: patientRol, default: patientRol.ROL })
+  role: patientRol;
 
   @Field()
   @Column()

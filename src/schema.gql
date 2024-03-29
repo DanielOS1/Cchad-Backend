@@ -2,39 +2,9 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
-type Patient {
-  id: Float!
-  name: String!
-  lastName: String!
-  email: String!
-  password: String!
-  gender: String!
-  birthdate: DateTime!
-  phone: String!
-  adress: String!
-  forecast: String!
-  enabled: Boolean!
-  createAt: DateTime!
-  updateAt: DateTime!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
-type Secretary {
-  id: Float!
-  name: String!
-  lastName: String!
-  email: String!
-  password: String!
-  createAt: DateTime!
-  updateAt: DateTime!
-}
-
 type Medic {
   id: Float!
+  role: String!
   name: String!
   lastName: String!
   email: String!
@@ -45,12 +15,30 @@ type Medic {
   updateAt: DateTime!
 }
 
-type Admin {
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Branch {
   id: Float!
   name: String!
-  lastName: String!
-  email: String!
-  password: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Box {
+  id: Float!
+  name: String!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Shift {
+  id: Float!
+  startTime: DateTime!
+  endTime: DateTime!
+  blocked: Boolean!
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -67,27 +55,48 @@ type Appointment {
   updateAt: DateTime!
 }
 
-type Box {
+type Patient {
   id: Float!
+  role: String!
   name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  gender: String!
+  birthdate: DateTime!
+  phone: String!
+  adress: String!
+  forecast: String!
+  enabled: Boolean!
   createAt: DateTime!
   updateAt: DateTime!
 }
 
-type Branch {
+type Secretary {
   id: Float!
+  role: String!
   name: String!
+  lastName: String!
+  email: String!
+  password: String!
   createAt: DateTime!
   updateAt: DateTime!
 }
 
-type Shift {
+type Admin {
   id: Float!
-  startTime: DateTime!
-  endTime: DateTime!
-  blocked: Boolean!
+  role: String!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
   createAt: DateTime!
   updateAt: DateTime!
+}
+
+type AuthResult {
+  user: Patient!
+  token: String!
 }
 
 type Query {
@@ -99,4 +108,15 @@ type Query {
   boxes: Box!
   branches: Branch!
   shifts: Shift!
+  testQuery: String!
+}
+
+type Mutation {
+  authenticateUser(input: userAuthenticationDto!): AuthResult!
+}
+
+input userAuthenticationDto {
+  email: String!
+  password: String!
+  role: String!
 }

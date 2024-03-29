@@ -16,11 +16,5 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   await app.listen(3000);
   console.log('App listening');
-  console.log('Zona horaria actual:', process.env.TZ); // Esto imprimirá la zona horaria actual configurada en tu aplicación Node.js
-
-  console.log(
-    'Zona horaria actual:',
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
-  ); // Otra forma de imprimir la zona horaria actual
 }
 bootstrap();

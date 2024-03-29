@@ -9,12 +9,20 @@ import { ObjectType, Field } from '@nestjs/graphql';
 
 import { User } from 'src/interfaces/user.interface';
 
+enum secretaryRol {
+  ROL = 'Secretaria',
+}
+
 @ObjectType('Secretary')
 @Entity('secretary')
 export class Secretary implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Field()
+  @Column({ type: 'enum', enum: secretaryRol, default: secretaryRol.ROL })
+  role: secretaryRol;
 
   @Field()
   @Column()

@@ -5,13 +5,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import * as Joi from 'joi';
+import { JwtModule } from '@nestjs/jwt';
 
 import config from './config';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { Patient } from './patient/patient.entity';
-import { PatientResolver } from './patient/patient.resolver';
 import { Secretary } from './secretary/secretary.entity';
 import { SecretaryResolver } from './secretary/secretary.resolver';
 import { Medic } from './medic/medic.entity';
@@ -26,6 +26,10 @@ import { Branch } from './branch/branch.entity';
 import { BranchResolver } from './branch/branch.resolver';
 import { Shift } from './shift/shift.entity';
 import { ShiftResolver } from './shift/shift.resolver';
+import { PatientResolver } from './patient/patient.resolver';
+import { PatientService } from './patient/patient.service';
+import { AuthResolver } from './auth/auth.resolver';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -39,6 +43,7 @@ import { ShiftResolver } from './shift/shift.resolver';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_HOST: Joi.string().required(),
+        JWT_SECRET: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -72,11 +77,21 @@ import { ShiftResolver } from './shift/shift.resolver';
       installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
+    JwtModule.registerAsync({
+      inject: [config.KEY],
+      useFactory: (configService: ConfigType<typeof config>) => {
+        return {
+          secret: configService.JwtSecret,
+        };
+      },
+    }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
     PatientResolver,
+    PatientService,
     MedicResolver,
     SecretaryResolver,
     AdminResolver,
@@ -84,6 +99,7 @@ import { ShiftResolver } from './shift/shift.resolver';
     BoxResolver,
     BranchResolver,
     ShiftResolver,
+    AuthResolver,
   ],
 })
 export class AppModule {}
