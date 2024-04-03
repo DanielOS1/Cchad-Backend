@@ -1,22 +1,35 @@
-version: '3.3'
-
 services:
-  postgres:
-    image: postgres:13
+  db:
+    image: postgres:16
     environment:
-      - POSTGRES_DB=cchad_db
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=123456
-      - TZ=America/Santiago
-    ports:
-      - '5432:5432'
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - ./sql/up.sql:/docker-entrypoint-initdb.d/up.sql
+    networks:
+      - bridge-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 15s
+      timeout: 15s
+      retries: 4
 
-  pgadmin:
-    image: dpage/pgadmin4
+  backend:
+    build: ./
     environment:
-      - PGADMIN_DEFAULT_EMAIL=root@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_HOST: db
+      JWT_SECRET: ${JWT_SECRET}
     ports:
-      - '5050:80'
+      - 3000:3000
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - bridge-network
+
+networks:
+  bridge-network:
+    driver: bridge
