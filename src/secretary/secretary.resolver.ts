@@ -1,13 +1,15 @@
-import { Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Resolver } from '@nestjs/graphql';
 
 import { Secretary } from './secretary.entity';
+import { CreateSecretaryDto } from 'src/secretary/secretary.dto';
+import { SecretaryService } from './secretary.service';
 
 @Resolver()
 export class SecretaryResolver {
-  constructor() {}
+  constructor(private readonly secretaryService: SecretaryService) {}
 
-  @Query(() => Secretary)
-  async secretaries() {
-    return 'Hola';
+  @Mutation(() => Secretary)
+  async registerSecretary(@Args('input') input: CreateSecretaryDto) {
+    return this.secretaryService.create(input);
   }
 }

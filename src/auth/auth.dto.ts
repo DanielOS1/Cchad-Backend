@@ -1,19 +1,30 @@
 import { InputType, Field } from '@nestjs/graphql';
-import { IsString, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsEmail,
+  IsEnum,
+  NotEquals,
+} from 'class-validator';
 import { Role } from './role.enum';
 
 @InputType()
 export class userAuthenticationDto {
   @Field()
+  @NotEquals(null)
   @IsNotEmpty()
   @IsString()
+  @IsEmail()
   readonly email: string;
   @Field()
+  @NotEquals(null)
   @IsNotEmpty()
   @IsString()
   readonly password: string;
   @Field()
-  @IsNotEmpty()
+  @NotEquals(null)
   @IsString()
+  @IsNotEmpty()
+  @IsEnum(Role)
   readonly role: Role;
 }

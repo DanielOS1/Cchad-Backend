@@ -4,15 +4,27 @@
 
 type Medic {
   id: Float!
-  role: String!
   name: String!
   lastName: String!
   email: String!
   password: String!
-  specialty: String!
+  specialty: MedicSpecialty!
   enabled: Boolean!
+  shifts: [Shift]!
   createAt: DateTime!
   updateAt: DateTime!
+}
+
+enum MedicSpecialty {
+  CARDIOLOGY
+  DERMATOLOGY
+  GASTROENTEROLOGY
+  NEUROLOGY
+  GYNECOLOGY
+  OBSTETRICS
+  OPHTHALMOLOGY
+  PSYCHIATRY
+  INTERNALMEDICINE
 }
 
 """
@@ -23,6 +35,7 @@ scalar DateTime
 type Branch {
   id: Float!
   name: String!
+  boxes: [Box]!
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -30,6 +43,8 @@ type Branch {
 type Box {
   id: Float!
   name: String!
+  shifts: [Shift]!
+  branch: Branch
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -39,6 +54,9 @@ type Shift {
   startTime: DateTime!
   endTime: DateTime!
   blocked: Boolean!
+  medic: Medic
+  box: Box
+  appointments: [Appointment]!
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -47,34 +65,59 @@ type Appointment {
   id: Float!
   startTime: DateTime!
   endTime: DateTime!
-  state: String!
+  state: AppointmentState!
   confirmed: Boolean!
   completed: Boolean!
-  type: String!
+  type: AppointmentType!
+  patient: Patient
+  shift: Shift
   createAt: DateTime!
   updateAt: DateTime!
+}
+
+enum AppointmentState {
+  ACEPTED
+  REJECTED
+  RESCHEDULED
+  CANCELED
+}
+
+enum AppointmentType {
+  CONSULT
+  CONTROL
+  PROCEDURE
 }
 
 type Patient {
   id: Float!
-  role: String!
   name: String!
   lastName: String!
   email: String!
   password: String!
-  gender: String!
+  gender: PatientGender!
   birthdate: DateTime!
   phone: String!
-  adress: String!
-  forecast: String!
+  address: String!
+  forecast: PatientForecast!
   enabled: Boolean!
+  appointments: [Appointment]!
   createAt: DateTime!
   updateAt: DateTime!
 }
 
+enum PatientGender {
+  MALE
+  FEMALE
+}
+
+enum PatientForecast {
+  FONASA
+  ISAPRE
+  PARTICULAR
+}
+
 type Secretary {
   id: Float!
-  role: String!
   name: String!
   lastName: String!
   email: String!
@@ -85,7 +128,6 @@ type Secretary {
 
 type Admin {
   id: Float!
-  role: String!
   name: String!
   lastName: String!
   email: String!
@@ -94,25 +136,62 @@ type Admin {
   updateAt: DateTime!
 }
 
+type User {
+  patient: Patient
+  medic: Medic
+  secretary: Secretary
+  admin: Admin
+}
+
 type AuthResult {
-  user: Patient!
+  user: User!
   token: String!
 }
 
 type Query {
-  patients: Patient!
-  medics: Medic!
-  secretaries: Secretary!
-  admins: Admin!
-  appointments: Appointment!
-  boxes: Box!
-  branches: Branch!
-  shifts: Shift!
   testQuery: String!
 }
 
 type Mutation {
-  authenticateUser(input: userAuthenticationDto!): AuthResult!
+  registerPatient(input: CreatePatientDto!): Patient!
+  registerMedic(input: CreateMedicDto!): Medic!
+  registerSecretary(input: CreateSecretaryDto!): Secretary!
+  registerAdmin(input: CreateAdminDto!): Admin!
+  authenticateUser(input: userAuthenticationDto!): AuthResult
+}
+
+input CreatePatientDto {
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  gender: String!
+  birthdate: DateTime!
+  phone: String!
+  address: String!
+  forecast: String!
+}
+
+input CreateMedicDto {
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  specialty: String!
+}
+
+input CreateSecretaryDto {
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+input CreateAdminDto {
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
 }
 
 input userAuthenticationDto {

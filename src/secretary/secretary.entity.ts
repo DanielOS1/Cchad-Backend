@@ -4,14 +4,12 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
+import * as bcrypt from 'bcrypt';
 
 import { User } from 'src/interfaces/user.interface';
-
-enum secretaryRol {
-  ROL = 'Secretaria',
-}
 
 @ObjectType('Secretary')
 @Entity('secretary')
@@ -19,10 +17,6 @@ export class Secretary implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Field()
-  @Column({ type: 'enum', enum: secretaryRol, default: secretaryRol.ROL })
-  role: secretaryRol;
 
   @Field()
   @Column()
@@ -47,4 +41,10 @@ export class Secretary implements User {
   @Field()
   @UpdateDateColumn({ precision: 0 })
   updateAt: Date;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    const saltRounds = 10;
+    this.password = await bcrypt.hash(this.password, saltRounds);
+  }
 }

@@ -31,20 +31,22 @@ export class Shift {
   @Column({ default: false })
   blocked: boolean;
 
+  @Field(() => Medic, { nullable: true })
   @ManyToOne(() => Medic, (medic) => medic.shifts, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   medic: Medic;
 
+  @Field(() => Box, { nullable: true })
   @ManyToOne(() => Box, (box) => box.shifts, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   box: Box;
 
+  @Field(() => [Appointment], { nullable: 'items' })
   @OneToMany(() => Appointment, (appointment) => appointment.shift, {
-    onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   appointments: Appointment[];

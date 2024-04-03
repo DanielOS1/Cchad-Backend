@@ -5,7 +5,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import * as Joi from 'joi';
-import { JwtModule } from '@nestjs/jwt';
 
 import config from './config';
 import { join } from 'path';
@@ -30,6 +29,13 @@ import { PatientResolver } from './patient/patient.resolver';
 import { PatientService } from './patient/patient.service';
 import { AuthResolver } from './auth/auth.resolver';
 import { AuthModule } from './auth/auth.module';
+import { MedicService } from './medic/medic.service';
+import { AdminService } from './admin/admin.service';
+import { SecretaryService } from './secretary/secretary.service';
+import { AppointmentService } from './appointment/appointment.service';
+import { BoxService } from './box/box.service';
+import { BranchService } from './branch/branch.service';
+import { ShiftService } from './shift/shift.service';
 
 @Module({
   imports: [
@@ -77,14 +83,7 @@ import { AuthModule } from './auth/auth.module';
       installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    JwtModule.registerAsync({
-      inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => {
-        return {
-          secret: configService.JwtSecret,
-        };
-      },
-    }),
+
     AuthModule,
   ],
   controllers: [AppController],
@@ -93,12 +92,19 @@ import { AuthModule } from './auth/auth.module';
     PatientResolver,
     PatientService,
     MedicResolver,
+    MedicService,
     SecretaryResolver,
+    SecretaryService,
     AdminResolver,
+    AdminService,
     AppointmentResolver,
+    AppointmentService,
     BoxResolver,
+    BoxService,
     BranchResolver,
+    BranchService,
     ShiftResolver,
+    ShiftService,
     AuthResolver,
   ],
 })

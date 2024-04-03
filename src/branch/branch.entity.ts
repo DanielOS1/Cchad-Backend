@@ -21,8 +21,8 @@ export class Branch {
   @Column()
   name: string;
 
+  @Field(() => [Box], { nullable: 'items' })
   @OneToMany(() => Box, (box) => box.branch, {
-    onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   boxes: Box[];

@@ -1,13 +1,23 @@
-import { Query, Resolver } from '@nestjs/graphql';
+import { Parent, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Appointment } from './appointment.entity';
+import { Patient } from 'src/patient/patient.entity';
+import { Shift } from 'src/shift/shift.entity';
+import { AppointmentService } from './appointment.service';
 
-@Resolver()
+@Resolver(() => Appointment)
 export class AppointmentResolver {
-  constructor() {}
+  constructor(private readonly appointmentService: AppointmentService) {}
 
-  @Query(() => Appointment)
-  async appointments() {
-    return 'Hola';
+  @ResolveField('patient', () => Patient)
+  async patient(@Parent() appointment: Appointment) {
+    const { id } = appointment;
+    return this.appointmentService.getPatient(id);
+  }
+
+  @ResolveField('shift', () => Shift)
+  async shift(@Parent() appointment: Appointment) {
+    const { id } = appointment;
+    return this.appointmentService.getShift(id);
   }
 }

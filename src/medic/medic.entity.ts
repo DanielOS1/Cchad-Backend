@@ -5,13 +5,15 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BeforeInsert,
 } from 'typeorm';
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import * as bcrypt from 'bcrypt';
 
 import { User } from 'src/interfaces/user.interface';
 import { Shift } from '../shift/shift.entity';
 
-enum medicSpecialty {
+export enum medicSpecialty {
   CARDIOLOGY = 'Cardiología',
   DERMATOLOGY = 'Dermatología',
   GASTROENTEROLOGY = 'Gastroenterology',
@@ -23,9 +25,9 @@ enum medicSpecialty {
   INTERNALMEDICINE = 'Medicina Interna',
 }
 
-enum medicRol {
-  ROL = 'Médico',
-}
+registerEnumType(medicSpecialty, {
+  name: 'MedicSpecialty',
+});
 
 @ObjectType('Medic')
 @Entity('medic')
@@ -33,10 +35,6 @@ export class Medic implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Field()
-  @Column({ type: 'enum', enum: medicRol, default: medicRol.ROL })
-  role: medicRol;
 
   @Field()
   @Column()
@@ -54,7 +52,7 @@ export class Medic implements User {
   @Column()
   password: string;
 
-  @Field()
+  @Field(() => medicSpecialty)
   @Column({ type: 'enum', enum: medicSpecialty })
   specialty: medicSpecialty;
 
@@ -62,8 +60,8 @@ export class Medic implements User {
   @Column({ default: true })
   enabled: boolean;
 
+  @Field(() => [Shift], { nullable: 'items' })
   @OneToMany(() => Shift, (shift) => shift.medic, {
-    onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   shifts: Shift[];
@@ -75,4 +73,10 @@ export class Medic implements User {
   @Field()
   @UpdateDateColumn({ precision: 0 })
   updateAt: Date;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    const saltRounds = 10;
+    this.password = await bcrypt.hash(this.password, saltRounds);
+  }
 }

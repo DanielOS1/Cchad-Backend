@@ -3,25 +3,45 @@ import {
   Field,
   Mutation,
   ObjectType,
-  Query,
   Resolver,
+  Query,
 } from '@nestjs/graphql';
-import { UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from './authGuard';
 import { AuthService } from './auth.service';
 
 import { Patient } from 'src/patient/patient.entity';
+import { Medic } from 'src/medic/medic.entity';
+import { Admin } from 'src/admin/admin.entity';
+import { Secretary } from 'src/secretary/secretary.entity';
 import { PatientService } from 'src/patient/patient.service';
+import { MedicService } from 'src/medic/medic.service';
+import { SecretaryService } from 'src/secretary/secretary.service';
+import { AdminService } from 'src/admin/admin.service';
 import { userAuthenticationDto } from './auth.dto';
-import { UnauthorizedException } from '@nestjs/common';
-import { Roles } from './roles.decorator';
+import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Role } from './role.enum';
+import { JwtAuthGuard } from './authGuard';
+import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
 
 @ObjectType()
-class AuthResult {
+export class User {
+  @Field({ nullable: true })
+  patient: Patient;
+
+  @Field({ nullable: true })
+  medic: Medic;
+
+  @Field({ nullable: true })
+  secretary: Secretary;
+
+  @Field({ nullable: true })
+  admin: Admin;
+}
+
+@ObjectType()
+export class AuthResult {
   @Field()
-  user: Patient;
+  user: User;
 
   @Field()
   token: string;
@@ -31,28 +51,49 @@ class AuthResult {
 export class AuthResolver {
   constructor(
     private readonly patientService: PatientService,
+    private readonly medicService: MedicService,
     private readonly authService: AuthService,
+    private readonly secretaryService: SecretaryService,
+    private readonly adminService: AdminService,
   ) {}
 
   @Query(() => String)
-  @Roles(Role.Patient)
+  @Roles(Role.Medic, Role.Patient, Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async testQuery() {
     return 'success';
   }
 
-  @Mutation(() => AuthResult)
+  @Mutation(() => AuthResult, { nullable: true })
   async authenticateUser(@Args('input') input: userAuthenticationDto) {
-    let user: Patient;
-    if (input.role == Role.Patient) {
-      user = await this.patientService.getPatientByEmail(input.email);
+    const user = new User();
+    let userPassword: string;
+    switch (input.role) {
+      case Role.Patient:
+        user.patient = await this.patientService.getPatientByEmail(input.email);
+        userPassword = user.patient.password;
+        break;
+      case Role.Medic:
+        user.medic = await this.medicService.getMedicByEmail(input.email);
+        userPassword = user.medic.password;
+        break;
+      case Role.Secretary:
+        user.secretary = await this.secretaryService.getSecretaryByEmail(
+          input.email,
+        );
+        userPassword = user.secretary.password;
+        break;
+      case Role.Admin:
+        user.admin = await this.adminService.getAdminByEmail(input.email);
+        userPassword = user.admin.password;
+        break;
     }
     const passwordHasMatch = await this.authService.validatePassword(
       input.password,
-      user.password,
+      userPassword,
     );
     if (passwordHasMatch) {
-      return this.authService.generateJWT(user);
+      return this.authService.generateJWT(user, input.role);
     }
     throw new UnauthorizedException();
   }

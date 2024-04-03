@@ -6,7 +6,7 @@ import {
   UpdateDateColumn,
   ManyToOne,
 } from 'typeorm';
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 
 import { Patient } from '../patient/patient.entity';
 import { Shift } from '../shift/shift.entity';
@@ -18,11 +18,19 @@ enum appointmentState {
   CANCELED = 'Cancelado',
 }
 
+registerEnumType(appointmentState, {
+  name: 'AppointmentState',
+});
+
 enum appointmentType {
   CONSULT = 'consulta',
   CONTROL = 'control',
   PROCEDURE = 'procedimiento',
 }
+
+registerEnumType(appointmentType, {
+  name: 'AppointmentType',
+});
 
 @ObjectType('Appointment')
 @Entity('appointment')
@@ -39,7 +47,7 @@ export class Appointment {
   @Column({ precision: 0 })
   endTime: Date;
 
-  @Field()
+  @Field(() => appointmentState)
   @Column({ type: 'enum', enum: appointmentState })
   state: appointmentState;
 
@@ -51,16 +59,18 @@ export class Appointment {
   @Column({ default: false })
   completed: boolean;
 
-  @Field()
+  @Field(() => appointmentType)
   @Column({ type: 'enum', enum: appointmentType })
   type: appointmentType;
 
+  @Field(() => Patient, { nullable: true })
   @ManyToOne(() => Patient, (patient) => patient.appointments, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   patient: Patient;
 
+  @Field(() => Shift, { nullable: true })
   @ManyToOne(() => Shift, (shift) => shift.appointments, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

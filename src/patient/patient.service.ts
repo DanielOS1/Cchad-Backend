@@ -1,7 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+
 import { Patient } from './patient.entity';
+import { CreatePatientDto } from './patient.dto';
+import { Appointment } from 'src/appointment/appointment.entity';
 
 @Injectable()
 export class PatientService {
@@ -13,8 +20,26 @@ export class PatientService {
   async getPatientByEmail(email: string): Promise<Patient> {
     const patient = await this.patientRepo.findOneBy({ email });
     if (!patient) {
-      throw new NotFoundException(`Patient with email ${email} not found`);
+      throw new NotFoundException('');
     }
     return patient;
+  }
+
+  async create(payload: CreatePatientDto): Promise<Patient> {
+    const newPatient = this.patientRepo.create(payload);
+    return await this.patientRepo.save(newPatient).catch((error) => {
+      throw new ConflictException(error.message);
+    });
+  }
+
+  async getAppointments(id: number): Promise<Appointment[]> {
+    const patient = await this.patientRepo.findOne({
+      where: { id },
+      relations: ['appointments'],
+    });
+    if (!patient) {
+      throw new NotFoundException();
+    }
+    return patient.appointments;
   }
 }

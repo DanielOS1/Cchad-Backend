@@ -1,13 +1,16 @@
-import { Query, Resolver } from '@nestjs/graphql';
+import { Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 
 import { Branch } from './branch.entity';
+import { Box } from 'src/box/box.entity';
+import { BranchService } from './branch.service';
 
-@Resolver()
+@Resolver(() => Branch)
 export class BranchResolver {
-  constructor() {}
+  constructor(private readonly branchService: BranchService) {}
 
-  @Query(() => Branch)
-  async branches() {
-    return 'Hola';
+  @ResolveField('boxes', () => [Box])
+  async boxes(@Parent() branch: Branch) {
+    const { id } = branch;
+    return this.branchService.getBoxes(id);
   }
 }

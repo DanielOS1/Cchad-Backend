@@ -33,7 +33,7 @@ export class RolesGuard implements CanActivate {
       const secretKey = this.configService.get<string>('JWT_SECRET');
       const decoded = jwt.verify(token, secretKey);
       const decodedToken = decoded as jwt.JwtPayload;
-      const userRol = decodedToken.user.role;
+      const userRol = decodedToken.role;
       const hasRequiredRole = requiredRoles.includes(userRol);
       return hasRequiredRole;
     } catch (error) {

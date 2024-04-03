@@ -22,12 +22,13 @@ export class Box {
   @Column()
   name: string;
 
+  @Field(() => [Shift], { nullable: 'items' })
   @OneToMany(() => Shift, (shift) => shift.box, {
-    onDelete: 'SET NULL',
     onUpdate: 'CASCADE',
   })
   shifts: Shift[];
 
+  @Field(() => Branch, { nullable: true })
   @ManyToOne(() => Branch, (branch) => branch.boxes, {
     onDelete: 'SET NULL',
     onUpdate: 'CASCADE',

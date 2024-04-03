@@ -5,26 +5,32 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  BeforeInsert,
 } from 'typeorm';
-import { ObjectType, Field } from '@nestjs/graphql';
+import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
+import * as bcrypt from 'bcrypt';
 
 import { User } from 'src/interfaces/user.interface';
 import { Appointment } from '../appointment/appointment.entity';
 
-enum patientForecast {
+export enum patientForecast {
   FONASA = 'FONASA',
   ISAPRE = 'ISAPRE',
   PARTICULAR = 'Particular',
 }
 
-enum patientGender {
+registerEnumType(patientForecast, {
+  name: 'PatientForecast',
+});
+
+export enum patientGender {
   MALE = 'masculino',
   FEMALE = 'femenino',
 }
 
-enum patientRol {
-  ROL = 'Paciente',
-}
+registerEnumType(patientGender, {
+  name: 'PatientGender',
+});
 
 @ObjectType('Patient')
 @Entity('patient')
@@ -32,10 +38,6 @@ export class Patient implements User {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
-
-  @Field()
-  @Column({ type: 'enum', enum: patientRol, default: patientRol.ROL })
-  role: patientRol;
 
   @Field()
   @Column()
@@ -53,7 +55,7 @@ export class Patient implements User {
   @Column()
   password: string;
 
-  @Field()
+  @Field(() => patientGender)
   @Column({ type: 'enum', enum: patientGender })
   gender: patientGender;
 
@@ -67,9 +69,9 @@ export class Patient implements User {
 
   @Field()
   @Column()
-  adress: string;
+  address: string;
 
-  @Field()
+  @Field(() => patientForecast)
   @Column({ type: 'enum', enum: patientForecast })
   forecast: patientForecast;
 
@@ -77,6 +79,7 @@ export class Patient implements User {
   @Column({ default: true })
   enabled: boolean;
 
+  @Field(() => [Appointment], { nullable: 'items' })
   @OneToMany(() => Appointment, (appointment) => appointment.patient, {
     onUpdate: 'CASCADE',
   })
@@ -89,4 +92,10 @@ export class Patient implements User {
   @Field()
   @UpdateDateColumn({ precision: 0 })
   updateAt: Date;
+
+  @BeforeInsert()
+  async hashPassword(): Promise<void> {
+    const saltRounds = 10;
+    this.password = await bcrypt.hash(this.password, saltRounds);
+  }
 }
