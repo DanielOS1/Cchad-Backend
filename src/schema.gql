@@ -2,6 +2,39 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Patient {
+  id: Float!
+  name: String!
+  lastName: String!
+  email: String!
+  password: String!
+  gender: PatientGender!
+  birthdate: DateTime!
+  phone: String!
+  address: String!
+  forecast: PatientForecast!
+  enabled: Boolean!
+  appointments: [Appointment]!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+enum PatientGender {
+  MALE
+  FEMALE
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+enum PatientForecast {
+  FONASA
+  ISAPRE
+  PARTICULAR
+}
+
 type Medic {
   id: Float!
   name: String!
@@ -26,11 +59,6 @@ enum MedicSpecialty {
   PSYCHIATRY
   INTERNALMEDICINE
 }
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
 
 type Branch {
   id: Float!
@@ -88,45 +116,17 @@ enum AppointmentType {
   PROCEDURE
 }
 
-type Patient {
+type Admin {
   id: Float!
   name: String!
   lastName: String!
   email: String!
   password: String!
-  gender: PatientGender!
-  birthdate: DateTime!
-  phone: String!
-  address: String!
-  forecast: PatientForecast!
-  enabled: Boolean!
-  appointments: [Appointment]!
   createAt: DateTime!
   updateAt: DateTime!
-}
-
-enum PatientGender {
-  MALE
-  FEMALE
-}
-
-enum PatientForecast {
-  FONASA
-  ISAPRE
-  PARTICULAR
 }
 
 type Secretary {
-  id: Float!
-  name: String!
-  lastName: String!
-  email: String!
-  password: String!
-  createAt: DateTime!
-  updateAt: DateTime!
-}
-
-type Admin {
   id: Float!
   name: String!
   lastName: String!
@@ -153,11 +153,17 @@ type Query {
 }
 
 type Mutation {
+  authenticateUser(input: userAuthenticationDto!): AuthResult
   registerPatient(input: CreatePatientDto!): Patient!
   registerMedic(input: CreateMedicDto!): Medic!
   registerSecretary(input: CreateSecretaryDto!): Secretary!
   registerAdmin(input: CreateAdminDto!): Admin!
-  authenticateUser(input: userAuthenticationDto!): AuthResult
+}
+
+input userAuthenticationDto {
+  email: String!
+  password: String!
+  role: String!
 }
 
 input CreatePatientDto {
@@ -192,10 +198,4 @@ input CreateAdminDto {
   lastName: String!
   email: String!
   password: String!
-}
-
-input userAuthenticationDto {
-  email: String!
-  password: String!
-  role: String!
 }

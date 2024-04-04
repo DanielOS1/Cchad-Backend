@@ -1,0 +1,11 @@
+test
+node_modules
+coverage
+.gitignore
+.git
+README.md
+dist
+.prettierrc
+.editorconfig
+env.example
+postgres_data

@@ -10,13 +10,7 @@ import config from './config';
 import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Patient } from './patient/patient.entity';
-import { Secretary } from './secretary/secretary.entity';
-import { SecretaryResolver } from './secretary/secretary.resolver';
-import { Medic } from './medic/medic.entity';
-import { MedicResolver } from './medic/medic.resolver';
-import { Admin } from './admin/admin.entity';
-import { AdminResolver } from './admin/admin.resolver';
+
 import { Appointment } from './appointment/appointment.entity';
 import { AppointmentResolver } from './appointment/appointment.resolver';
 import { Box } from './box/box.entity';
@@ -25,13 +19,7 @@ import { Branch } from './branch/branch.entity';
 import { BranchResolver } from './branch/branch.resolver';
 import { Shift } from './shift/shift.entity';
 import { ShiftResolver } from './shift/shift.resolver';
-import { PatientResolver } from './patient/patient.resolver';
-import { PatientService } from './patient/patient.service';
-import { AuthResolver } from './auth/auth.resolver';
 import { AuthModule } from './auth/auth.module';
-import { MedicService } from './medic/medic.service';
-import { AdminService } from './admin/admin.service';
-import { SecretaryService } from './secretary/secretary.service';
 import { AppointmentService } from './appointment/appointment.service';
 import { BoxService } from './box/box.service';
 import { BranchService } from './branch/branch.service';
@@ -68,35 +56,17 @@ import { ShiftService } from './shift/shift.service';
         };
       },
     }),
-    TypeOrmModule.forFeature([
-      Patient,
-      Medic,
-      Secretary,
-      Admin,
-      Appointment,
-      Box,
-      Branch,
-      Shift,
-    ]),
+    TypeOrmModule.forFeature([Appointment, Box, Branch, Shift]),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-
     AuthModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    PatientResolver,
-    PatientService,
-    MedicResolver,
-    MedicService,
-    SecretaryResolver,
-    SecretaryService,
-    AdminResolver,
-    AdminService,
     AppointmentResolver,
     AppointmentService,
     BoxResolver,
@@ -105,7 +75,6 @@ import { ShiftService } from './shift/shift.service';
     BranchService,
     ShiftResolver,
     ShiftService,
-    AuthResolver,
   ],
 })
 export class AppModule {}
