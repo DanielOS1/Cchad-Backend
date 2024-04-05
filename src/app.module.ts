@@ -17,13 +17,16 @@ import { Box } from './box/box.entity';
 import { BoxResolver } from './box/box.resolver';
 import { Branch } from './branch/branch.entity';
 import { BranchResolver } from './branch/branch.resolver';
-import { Shift } from './shift/shift.entity';
-import { ShiftResolver } from './shift/shift.resolver';
+import { Schedule } from './schedule/schedule.entity';
+import { ScheduleResolver } from './schedule/schedule.resolver';
 import { AuthModule } from './auth/auth.module';
 import { AppointmentService } from './appointment/appointment.service';
 import { BoxService } from './box/box.service';
 import { BranchService } from './branch/branch.service';
-import { ShiftService } from './shift/shift.service';
+import { ScheduleService } from './schedule/schedule.service';
+import { Slot } from './slot/slot.entity';
+import { SlotResolver } from './slot/slot.resolver';
+import { SlotService } from './slot/slot.service';
 
 @Module({
   imports: [
@@ -56,7 +59,7 @@ import { ShiftService } from './shift/shift.service';
         };
       },
     }),
-    TypeOrmModule.forFeature([Appointment, Box, Branch, Shift]),
+    TypeOrmModule.forFeature([Appointment, Box, Branch, Schedule, Slot]),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
@@ -73,8 +76,10 @@ import { ShiftService } from './shift/shift.service';
     BoxService,
     BranchResolver,
     BranchService,
-    ShiftResolver,
-    ShiftService,
+    ScheduleResolver,
+    ScheduleService,
+    SlotResolver,
+    SlotService,
   ],
 })
 export class AppModule {}

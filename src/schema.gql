@@ -6,6 +6,7 @@ type Patient {
   id: Float!
   name: String!
   lastName: String!
+  rut: String!
   email: String!
   password: String!
   gender: PatientGender!
@@ -43,7 +44,7 @@ type Medic {
   password: String!
   specialty: MedicSpecialty!
   enabled: Boolean!
-  shifts: [Shift]!
+  schedules: [Schedule]!
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -63,6 +64,8 @@ enum MedicSpecialty {
 type Branch {
   id: Float!
   name: String!
+  address: String!
+  enabled: Boolean!
   boxes: [Box]!
   createAt: DateTime!
   updateAt: DateTime!
@@ -71,19 +74,26 @@ type Branch {
 type Box {
   id: Float!
   name: String!
-  shifts: [Shift]!
-  branch: Branch
+  enabled: Boolean!
+  schedules: [Schedule]!
+  branch: Branch!
   createAt: DateTime!
   updateAt: DateTime!
 }
 
-type Shift {
+type Schedule {
   id: Float!
-  startTime: DateTime!
-  endTime: DateTime!
-  blocked: Boolean!
-  medic: Medic
-  box: Box
+  medic: Medic!
+  box: Box!
+  slots: [Slot]!
+  createAt: DateTime!
+  updateAt: DateTime!
+}
+
+type Slot {
+  id: Float!
+  enabled: Boolean!
+  schedule: Schedule!
   appointments: [Appointment]!
   createAt: DateTime!
   updateAt: DateTime!
@@ -91,23 +101,23 @@ type Shift {
 
 type Appointment {
   id: Float!
-  startTime: DateTime!
-  endTime: DateTime!
   state: AppointmentState!
   confirmed: Boolean!
-  completed: Boolean!
   type: AppointmentType!
+  diagnosis: String!
+  treatment: String!
+  prescriptionDrugs: String!
   patient: Patient
-  shift: Shift
+  slot: Slot!
   createAt: DateTime!
   updateAt: DateTime!
 }
 
 enum AppointmentState {
-  ACEPTED
-  REJECTED
+  RESERVED
   RESCHEDULED
   CANCELED
+  COMPLETED
 }
 
 enum AppointmentType {
@@ -122,6 +132,7 @@ type Admin {
   lastName: String!
   email: String!
   password: String!
+  enabled: Boolean!
   createAt: DateTime!
   updateAt: DateTime!
 }
@@ -132,6 +143,7 @@ type Secretary {
   lastName: String!
   email: String!
   password: String!
+  enabled: Boolean!
   createAt: DateTime!
   updateAt: DateTime!
 }

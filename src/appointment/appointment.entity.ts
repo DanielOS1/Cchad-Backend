@@ -9,13 +9,13 @@ import {
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 
 import { Patient } from '../patient/patient.entity';
-import { Shift } from '../shift/shift.entity';
+import { Slot } from '../slot/slot.entity';
 
 enum appointmentState {
-  ACEPTED = 'Aceptado',
-  REJECTED = 'Rechazado',
-  RESCHEDULED = 'Reprogramado',
-  CANCELED = 'Cancelado',
+  RESERVED = 'Reservada',
+  RESCHEDULED = 'Reprogramada',
+  CANCELED = 'Cancelada',
+  COMPLETED = 'Completada',
 }
 
 registerEnumType(appointmentState, {
@@ -23,9 +23,9 @@ registerEnumType(appointmentState, {
 });
 
 enum appointmentType {
-  CONSULT = 'consulta',
-  CONTROL = 'control',
-  PROCEDURE = 'procedimiento',
+  CONSULT = 'Consulta',
+  CONTROL = 'Control',
+  PROCEDURE = 'Procedimiento',
 }
 
 registerEnumType(appointmentType, {
@@ -39,14 +39,6 @@ export class Appointment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column({ precision: 0 })
-  startTime: Date;
-
-  @Field()
-  @Column({ precision: 0 })
-  endTime: Date;
-
   @Field(() => appointmentState)
   @Column({ type: 'enum', enum: appointmentState })
   state: appointmentState;
@@ -55,27 +47,29 @@ export class Appointment {
   @Column({ default: false })
   confirmed: boolean;
 
-  @Field()
-  @Column({ default: false })
-  completed: boolean;
-
   @Field(() => appointmentType)
   @Column({ type: 'enum', enum: appointmentType })
   type: appointmentType;
 
+  @Field()
+  @Column()
+  diagnosis: string;
+
+  @Field()
+  @Column()
+  treatment: string;
+
+  @Field()
+  @Column()
+  prescriptionDrugs: string;
+
   @Field(() => Patient, { nullable: true })
-  @ManyToOne(() => Patient, (patient) => patient.appointments, {
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-  })
+  @ManyToOne(() => Patient, (patient) => patient.appointments)
   patient: Patient;
 
-  @Field(() => Shift, { nullable: true })
-  @ManyToOne(() => Shift, (shift) => shift.appointments, {
-    onDelete: 'SET NULL',
-    onUpdate: 'CASCADE',
-  })
-  shift: Shift;
+  @Field(() => Slot)
+  @ManyToOne(() => Slot, (slot) => slot.appointments)
+  slot: Slot;
 
   @Field()
   @CreateDateColumn({

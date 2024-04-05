@@ -8,31 +8,33 @@ import {
   ManyToOne,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
-import { Schedule } from '../schedule/schedule.entity';
-import { Branch } from '../branch/branch.entity';
 
-@ObjectType('Box')
-@Entity('box')
-export class Box {
+import { Appointment } from '../appointment/appointment.entity';
+import { Schedule } from '../schedule/schedule.entity';
+
+@ObjectType('Slot')
+@Entity('slot')
+export class Slot {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Field()
-  @Column()
-  name: string;
+  @Column({
+    type: 'tstzrange',
+  })
+  time: string;
 
   @Field()
   @Column({ default: true })
   enabled: boolean;
 
-  @Field(() => [Schedule], { nullable: 'items' })
-  @OneToMany(() => Schedule, (schedule) => schedule.box)
-  schedules: Schedule[];
+  @Field(() => Schedule)
+  @ManyToOne(() => Schedule, (schedule) => schedule.slots)
+  schedule: Schedule;
 
-  @Field(() => Branch)
-  @ManyToOne(() => Branch, (branch) => branch.boxes)
-  branch: Branch;
+  @Field(() => [Appointment], { nullable: 'items' })
+  @OneToMany(() => Appointment, (appointment) => appointment.slot)
+  appointments: Appointment[];
 
   @Field()
   @CreateDateColumn({ precision: 0 })

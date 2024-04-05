@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Box } from './box.entity';
-import { Shift } from 'src/shift/shift.entity';
+import { Schedule } from 'src/schedule/schedule.entity';
 import { Branch } from 'src/branch/branch.entity';
 
 @Injectable()
@@ -13,15 +13,15 @@ export class BoxService {
     private boxRepo: Repository<Box>,
   ) {}
 
-  async getShifts(id: number): Promise<Shift[]> {
+  async getSchedules(id: number): Promise<Schedule[]> {
     const box = await this.boxRepo.findOne({
       where: { id },
-      relations: ['shifts'],
+      relations: ['schedules'],
     });
     if (!box) {
       throw new NotFoundException('');
     }
-    return box.shifts;
+    return box.schedules;
   }
 
   async getBranch(id: number): Promise<Branch> {

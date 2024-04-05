@@ -24,8 +24,8 @@ registerEnumType(patientForecast, {
 });
 
 export enum patientGender {
-  MALE = 'masculino',
-  FEMALE = 'femenino',
+  MALE = 'Masculino',
+  FEMALE = 'Femenino',
 }
 
 registerEnumType(patientGender, {
@@ -46,6 +46,10 @@ export class Patient implements User {
   @Field()
   @Column()
   lastName: string;
+
+  @Field()
+  @Column({ unique: true })
+  rut: string;
 
   @Field()
   @Column({ unique: true })
@@ -80,9 +84,7 @@ export class Patient implements User {
   enabled: boolean;
 
   @Field(() => [Appointment], { nullable: 'items' })
-  @OneToMany(() => Appointment, (appointment) => appointment.patient, {
-    onUpdate: 'CASCADE',
-  })
+  @OneToMany(() => Appointment, (appointment) => appointment.patient)
   appointments: Appointment[];
 
   @Field()

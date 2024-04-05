@@ -21,6 +21,14 @@ export class Branch {
   @Column()
   name: string;
 
+  @Field()
+  @Column()
+  address: string;
+
+  @Field()
+  @Column({ default: true })
+  enabled: boolean;
+
   @Field(() => [Box], { nullable: 'items' })
   @OneToMany(() => Box, (box) => box.branch, {
     onUpdate: 'CASCADE',

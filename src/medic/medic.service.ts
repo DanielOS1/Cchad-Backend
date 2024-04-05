@@ -8,7 +8,7 @@ import { Repository } from 'typeorm';
 import { Medic } from './medic.entity';
 
 import { CreateMedicDto } from './medic.dto';
-import { Shift } from 'src/shift/shift.entity';
+import { Schedule } from 'src/schedule/schedule.entity';
 
 @Injectable()
 export class MedicService {
@@ -32,14 +32,14 @@ export class MedicService {
     });
   }
 
-  async getShifts(id: number): Promise<Shift[]> {
+  async getSchedules(id: number): Promise<Schedule[]> {
     const medic = await this.medicRepo.findOne({
       where: { id },
-      relations: ['shifts'],
+      relations: ['schedules'],
     });
     if (!medic) {
       throw new NotFoundException('');
     }
-    return medic.shifts;
+    return medic.schedules;
   }
 }

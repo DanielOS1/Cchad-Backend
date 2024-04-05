@@ -11,12 +11,12 @@ import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
 
 import { User } from 'src/interfaces/user.interface';
-import { Shift } from '../shift/shift.entity';
+import { Schedule } from '../schedule/schedule.entity';
 
 export enum medicSpecialty {
   CARDIOLOGY = 'Cardiología',
   DERMATOLOGY = 'Dermatología',
-  GASTROENTEROLOGY = 'Gastroenterology',
+  GASTROENTEROLOGY = 'Gastroenterología',
   NEUROLOGY = 'Neurología',
   GYNECOLOGY = 'Ginecología',
   OBSTETRICS = 'Obstetricia',
@@ -60,11 +60,9 @@ export class Medic implements User {
   @Column({ default: true })
   enabled: boolean;
 
-  @Field(() => [Shift], { nullable: 'items' })
-  @OneToMany(() => Shift, (shift) => shift.medic, {
-    onUpdate: 'CASCADE',
-  })
-  shifts: Shift[];
+  @Field(() => [Schedule], { nullable: 'items' })
+  @OneToMany(() => Schedule, (schedule) => schedule.medic)
+  schedules: Schedule[];
 
   @Field()
   @CreateDateColumn({ precision: 0 })

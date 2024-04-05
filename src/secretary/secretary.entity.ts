@@ -35,6 +35,10 @@ export class Secretary implements User {
   password: string;
 
   @Field()
+  @Column({ default: true })
+  enabled: boolean;
+
+  @Field()
   @CreateDateColumn({ precision: 0 })
   createAt: Date;
 

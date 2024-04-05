@@ -3,6 +3,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { Appointment } from './appointment.entity';
+import { Patient } from 'src/patient/patient.entity';
+import { Slot } from 'src/slot/slot.entity';
 
 @Injectable()
 export class AppointmentService {
@@ -11,7 +13,7 @@ export class AppointmentService {
     private appointmentRepo: Repository<Appointment>,
   ) {}
 
-  async getPatient(id: number) {
+  async getPatient(id: number): Promise<Patient> {
     const appointment = await this.appointmentRepo.findOne({
       where: { id },
       relations: ['patient'],
@@ -22,14 +24,14 @@ export class AppointmentService {
     return appointment.patient;
   }
 
-  async getShift(id: number) {
+  async getSlot(id: number): Promise<Slot> {
     const appointment = await this.appointmentRepo.findOne({
       where: { id },
-      relations: ['shift'],
+      relations: ['slot'],
     });
     if (!appointment) {
       throw new NotFoundException('');
     }
-    return appointment.shift;
+    return appointment.slot;
   }
 }
