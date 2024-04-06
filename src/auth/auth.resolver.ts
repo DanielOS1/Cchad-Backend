@@ -16,7 +16,7 @@ import { PatientService } from 'src/patient/patient.service';
 import { MedicService } from 'src/medic/medic.service';
 import { SecretaryService } from 'src/secretary/secretary.service';
 import { AdminService } from 'src/admin/admin.service';
-import { userAuthenticationDto } from './auth.dto';
+import { changePasswordDto, userAuthenticationDto } from './auth.dto';
 import { UnauthorizedException, UseGuards } from '@nestjs/common';
 import { Role } from './role.enum';
 import { JwtAuthGuard } from './authGuard';
@@ -57,7 +57,7 @@ export class AuthResolver {
     private readonly adminService: AdminService,
   ) {}
 
-  @Query(() => String)
+  @Query(() => String) //ELMINAR DESPUES
   @Roles(Role.Medic, Role.Patient, Role.Admin)
   @UseGuards(JwtAuthGuard, RolesGuard)
   async testQuery() {
@@ -66,7 +66,7 @@ export class AuthResolver {
 
   @Mutation(() => AuthResult, { nullable: true })
   async authenticateUser(@Args('input') input: userAuthenticationDto) {
-    const user = new User();
+    const user: User = new User();
     let userPassword: string;
     switch (input.role) {
       case Role.Patient:
@@ -96,5 +96,34 @@ export class AuthResolver {
       return this.authService.generateJWT(user, input.role);
     }
     throw new UnauthorizedException();
+  }
+
+  @Mutation(() => User, { nullable: true })
+  /*@UseGuards(JwtAuthGuard)*/
+  async changePassword(@Args('input') input: changePasswordDto) {
+    const user: User = new User();
+    switch (input.role) {
+      case Role.Patient:
+        user.patient = await this.patientService.update(input.userid, {
+          password: input.newPassword,
+        });
+        break;
+      case Role.Medic:
+        user.medic = await this.medicService.update(input.userid, {
+          password: input.newPassword,
+        });
+        break;
+      case Role.Secretary:
+        user.secretary = await this.secretaryService.update(input.userid, {
+          password: input.newPassword,
+        });
+        break;
+      case Role.Admin:
+        user.admin = await this.adminService.update(input.userid, {
+          password: input.newPassword,
+        });
+        break;
+    }
+    return user;
   }
 }

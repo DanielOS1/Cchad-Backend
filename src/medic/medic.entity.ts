@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
@@ -72,6 +73,7 @@ export class Medic implements User {
   @UpdateDateColumn({ precision: 0 })
   updateAt: Date;
 
+  @BeforeUpdate()
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     const saltRounds = 10;

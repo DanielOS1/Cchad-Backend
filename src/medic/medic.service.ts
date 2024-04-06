@@ -7,7 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Medic } from './medic.entity';
 
-import { CreateMedicDto } from './medic.dto';
+import { CreateMedicDto, UpdateMedicDto } from './medic.dto';
 import { Schedule } from 'src/schedule/schedule.entity';
 
 @Injectable()
@@ -28,6 +28,17 @@ export class MedicService {
   async create(payload: CreateMedicDto): Promise<Medic> {
     const newMedic = this.medicRepo.create(payload);
     return await this.medicRepo.save(newMedic).catch((error) => {
+      throw new ConflictException(error.message);
+    });
+  }
+
+  async update(id: number, payload: UpdateMedicDto): Promise<Medic> {
+    const medic = await this.medicRepo.findOneBy({ id });
+    if (!medic) {
+      throw new NotFoundException('');
+    }
+    this.medicRepo.merge(medic, payload);
+    return await this.medicRepo.save(medic).catch((error) => {
       throw new ConflictException(error.message);
     });
   }

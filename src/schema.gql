@@ -126,7 +126,7 @@ enum AppointmentType {
   PROCEDURE
 }
 
-type Admin {
+type Secretary {
   id: Float!
   name: String!
   lastName: String!
@@ -137,12 +137,11 @@ type Admin {
   updateAt: DateTime!
 }
 
-type Secretary {
+type Admin {
   id: Float!
   name: String!
   lastName: String!
   email: String!
-  password: String!
   enabled: Boolean!
   createAt: DateTime!
   updateAt: DateTime!
@@ -165,17 +164,13 @@ type Query {
 }
 
 type Mutation {
-  authenticateUser(input: userAuthenticationDto!): AuthResult
   registerPatient(input: CreatePatientDto!): Patient!
-  registerMedic(input: CreateMedicDto!): Medic!
-  registerSecretary(input: CreateSecretaryDto!): Secretary!
-  registerAdmin(input: CreateAdminDto!): Admin!
-}
-
-input userAuthenticationDto {
-  email: String!
-  password: String!
-  role: String!
+  registerMedic(input: registerMedicDto!): Medic!
+  registerSecretary(input: registerSecretaryDto!): Secretary!
+  registerAdmin(input: registerAdminDto!): Admin!
+  registerPatientBySecretaryOrAdmin(input: CreatePatientBySecretaryOrAdminDto!): Patient!
+  authenticateUser(input: userAuthenticationDto!): AuthResult
+  changePassword(input: changePasswordDto!): User
 }
 
 input CreatePatientDto {
@@ -191,24 +186,45 @@ input CreatePatientDto {
   forecast: String!
 }
 
-input CreateMedicDto {
+input registerMedicDto {
   name: String!
   lastName: String!
   email: String!
-  password: String!
   specialty: String!
 }
 
-input CreateSecretaryDto {
+input registerSecretaryDto {
   name: String!
   lastName: String!
   email: String!
-  password: String!
 }
 
-input CreateAdminDto {
+input registerAdminDto {
   name: String!
   lastName: String!
   email: String!
+}
+
+input CreatePatientBySecretaryOrAdminDto {
+  name: String!
+  lastName: String!
+  email: String!
+  rut: String!
+  gender: String!
+  birthdate: DateTime!
+  phone: String!
+  address: String!
+  forecast: String!
+}
+
+input userAuthenticationDto {
+  email: String!
   password: String!
+  role: String!
+}
+
+input changePasswordDto {
+  userid: Float!
+  newPassword: String!
+  role: String!
 }

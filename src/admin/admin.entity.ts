@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 import * as bcrypt from 'bcrypt';
@@ -30,7 +31,6 @@ export class Admin implements User {
   @Column({ unique: true })
   email: string;
 
-  @Field()
   @Column()
   password: string;
 
@@ -46,6 +46,7 @@ export class Admin implements User {
   @UpdateDateColumn({ precision: 0 })
   updateAt: Date;
 
+  @BeforeUpdate()
   @BeforeInsert()
   async hashPassword(): Promise<void> {
     const saltRounds = 10;

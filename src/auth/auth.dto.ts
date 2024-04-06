@@ -5,6 +5,7 @@ import {
   IsEmail,
   IsEnum,
   NotEquals,
+  IsNumber,
 } from 'class-validator';
 import { Role } from './role.enum';
 
@@ -21,6 +22,25 @@ export class userAuthenticationDto {
   @IsNotEmpty()
   @IsString()
   readonly password: string;
+  @Field()
+  @NotEquals(null)
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Role)
+  readonly role: Role;
+}
+
+@InputType()
+export class changePasswordDto {
+  @Field()
+  @NotEquals(null)
+  @IsNumber()
+  readonly userid: number;
+  @Field()
+  @NotEquals(null)
+  @IsNotEmpty()
+  @IsString()
+  readonly newPassword: string;
   @Field()
   @NotEquals(null)
   @IsString()

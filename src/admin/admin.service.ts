@@ -6,7 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Admin } from './admin.entity';
-import { CreateAdminDto } from './admin.dto';
+import { CreateAdminDto, UpdateAdminDto } from './admin.dto';
 
 @Injectable()
 export class AdminService {
@@ -26,6 +26,17 @@ export class AdminService {
   async create(payload: CreateAdminDto): Promise<Admin> {
     const newAdmin = this.adminRepo.create(payload);
     return await this.adminRepo.save(newAdmin).catch((error) => {
+      throw new ConflictException(error.message);
+    });
+  }
+
+  async update(id: number, payload: UpdateAdminDto): Promise<Admin> {
+    const admin = await this.adminRepo.findOneBy({ id });
+    if (!admin) {
+      throw new NotFoundException('');
+    }
+    this.adminRepo.merge(admin, payload);
+    return await this.adminRepo.save(admin).catch((error) => {
       throw new ConflictException(error.message);
     });
   }

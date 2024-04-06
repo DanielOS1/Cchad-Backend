@@ -8,8 +8,6 @@ import * as Joi from 'joi';
 
 import config from './config';
 import { join } from 'path';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 
 import { Appointment } from './appointment/appointment.entity';
 import { AppointmentResolver } from './appointment/appointment.resolver';
@@ -27,6 +25,13 @@ import { ScheduleService } from './schedule/schedule.service';
 import { Slot } from './slot/slot.entity';
 import { SlotResolver } from './slot/slot.resolver';
 import { SlotService } from './slot/slot.service';
+import { PatientResolver } from './patient/patient.resolver';
+import { SecretaryResolver } from './secretary/secretary.resolver';
+import { AdminResolver } from './admin/admin.resolver';
+import { MedicResolver } from './medic/medic.resolver';
+import { MailService } from './mail/mail.service';
+import { MailModule } from './mail/mail.module';
+import { AuthResolver } from './auth/auth.resolver';
 
 @Module({
   imports: [
@@ -41,6 +46,8 @@ import { SlotService } from './slot/slot.service';
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_HOST: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
+        MAILDEV_INCOMING_USER: Joi.string().required(),
+        MAILDEV_INCOMING_PASS: Joi.string().required(),
       }),
     }),
     TypeOrmModule.forRootAsync({
@@ -66,10 +73,9 @@ import { SlotService } from './slot/slot.service';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
     AuthModule,
+    MailModule,
   ],
-  controllers: [AppController],
   providers: [
-    AppService,
     AppointmentResolver,
     AppointmentService,
     BoxResolver,
@@ -80,6 +86,12 @@ import { SlotService } from './slot/slot.service';
     ScheduleService,
     SlotResolver,
     SlotService,
+    PatientResolver,
+    MedicResolver,
+    SecretaryResolver,
+    AdminResolver,
+    MailService,
+    AuthResolver,
   ],
 })
 export class AppModule {}
