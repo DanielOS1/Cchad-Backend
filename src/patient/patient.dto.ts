@@ -42,6 +42,12 @@ export class CreatePatientDto {
   @IsString()
   @NotEquals(null)
   @IsNotEmpty()
+  readonly rut: string;
+
+  @Field()
+  @IsString()
+  @NotEquals(null)
+  @IsNotEmpty()
   @IsEnum(patientGender)
   readonly gender: patientGender;
 

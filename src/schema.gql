@@ -183,6 +183,7 @@ input CreatePatientDto {
   lastName: String!
   email: String!
   password: String!
+  rut: String!
   gender: String!
   birthdate: DateTime!
   phone: String!
