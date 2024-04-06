@@ -25,7 +25,14 @@ export class MailService {
     this.mailerService.sendMail({
       to: email,
       subject: 'Registrado en Centro Médico Cchad',
-      text: `Usuario: ${name} ${lastName}, Rol:${role}, Correo de ingreso: ${email}, Clave provisional: ${password}`,
+      template: 'registerStaff',
+      context: {
+        name,
+        lastName,
+        email,
+        password,
+        role,
+      },
     });
   }
 
@@ -39,13 +46,24 @@ export class MailService {
       this.mailerService.sendMail({
         to: email,
         subject: 'Bienvenido a Centro Médico Cchad',
-        text: `Te damos la bienvenida ${name} ${lastName}. Credenciales de ingreso: - Correo electrónico: ${email}, Clave provisional: ${password}. **IMPORTANTE - Por favor, recuerda que la clave provisional debe cambiarse lo antes posible por motivos de seguridad.**`,
+        template: 'registerPatientByAdminOrSecretary',
+        context: {
+          name,
+          lastName,
+          email,
+          password,
+        },
       });
     } else {
       this.mailerService.sendMail({
         to: email,
         subject: 'Bienvenido a Centro Médico Cchad',
-        text: `Te damos la bienvenida ${name} ${lastName}, Correo de ingreso: ${email}`,
+        template: `registerPatient`,
+        context: {
+          name,
+          lastName,
+          email,
+        },
       });
     }
   }

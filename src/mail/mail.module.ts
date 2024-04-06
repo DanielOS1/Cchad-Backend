@@ -1,7 +1,9 @@
 import { Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { config } from 'dotenv';
+
 import { MailService } from './mail.service';
 
 config();
@@ -23,6 +25,13 @@ const configService = new ConfigService();
       },
       defaults: {
         from: '"Centro Médico Cchad" <cchad.atencion@gmail.com>',
+      },
+      template: {
+        dir: __dirname + '/templates',
+        adapter: new HandlebarsAdapter(),
+        options: {
+          strict: true,
+        },
       },
     }),
   ],

@@ -7,6 +7,7 @@ import {
   NotEquals,
   IsNumber,
 } from 'class-validator';
+
 import { Role } from './role.enum';
 
 @InputType()
