@@ -67,4 +67,15 @@ export class MailService {
       });
     }
   }
+
+  recoverPassword(email: string, password: string): void {
+    this.mailerService.sendMail({
+      to: email,
+      subject: 'Recuperación de contraseña',
+      template: 'passwordRecovery',
+      context: {
+        password,
+      },
+    });
+  }
 }

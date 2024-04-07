@@ -49,3 +49,18 @@ export class changePasswordDto {
   @IsEnum(Role)
   readonly role: Role;
 }
+
+@InputType()
+export class recoverPasswordDto {
+  @Field()
+  @NotEquals(null)
+  @IsNotEmpty()
+  @IsString()
+  readonly email: string;
+  @Field()
+  @NotEquals(null)
+  @IsString()
+  @IsNotEmpty()
+  @IsEnum(Role)
+  readonly role: Role;
+}

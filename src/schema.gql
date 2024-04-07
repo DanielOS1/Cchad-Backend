@@ -171,6 +171,7 @@ type Mutation {
   registerPatientBySecretaryOrAdmin(input: CreatePatientBySecretaryOrAdminDto!): Patient!
   authenticateUser(input: userAuthenticationDto!): AuthResult
   changePassword(input: changePasswordDto!): User
+  recoverPassword(input: recoverPasswordDto!): String
 }
 
 input CreatePatientDto {
@@ -226,5 +227,10 @@ input userAuthenticationDto {
 input changePasswordDto {
   userid: Float!
   newPassword: String!
+  role: String!
+}
+
+input recoverPasswordDto {
+  email: String!
   role: String!
 }
