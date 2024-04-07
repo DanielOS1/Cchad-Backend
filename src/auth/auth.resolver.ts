@@ -31,7 +31,6 @@ import { Role } from './role.enum';
 import { JwtAuthGuard } from './authGuard';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
-import { MailOptions } from 'nodemailer/lib/smtp-transport';
 import { MailService } from 'src/mail/mail.service';
 
 @ObjectType()
