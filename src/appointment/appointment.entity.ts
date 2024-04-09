@@ -13,6 +13,7 @@ import { Patient } from '../patient/patient.entity';
 import { Slot } from '../slot/slot.entity';
 
 enum appointmentState {
+  AVAILABLE = 'Disponible',
   RESERVED = 'Reservada',
   RESCHEDULED = 'Reprogramada',
   CANCELED = 'Cancelada',

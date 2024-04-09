@@ -209,24 +209,107 @@ EXECUTE FUNCTION validate_schedule_overlap();
 
 
 
-CREATE OR REPLACE FUNCTION validate_slot_overlap()
+CREATE OR REPLACE FUNCTION prevent_time_update()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW."time" <> OLD."time" THEN
+        RAISE EXCEPTION 'No se puede modificar la duración de un turno, solo eliminar por completo y sólo si no hay citas registradas.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prevent_time_update_trigger
+BEFORE UPDATE ON "schedule"
+FOR EACH ROW
+EXECUTE FUNCTION prevent_time_update();
+
+
+
+CREATE OR REPLACE FUNCTION prevent_delete_schedule_with_appointments()
 RETURNS TRIGGER AS $$
 BEGIN
     IF EXISTS (
         SELECT 1
-        FROM slot s
-        JOIN schedule sch ON s.schedule_id = sch.id
-        WHERE sch.id = NEW.schedule_id
-        AND tstzrange(NEW.time) && s.time
+        FROM slot
+        WHERE schedule_id = OLD.id
+          AND EXISTS (
+              SELECT 1
+              FROM appointment
+              WHERE appointment.slot_id = slot.id
+          )
     ) THEN
-        RAISE EXCEPTION 'El nuevo bloque se solapa con otro bloque de la misma agenda';
+        RAISE EXCEPTION 'No se pueden eliminar horarios que tengan citas registradas.';
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER prevent_delete_schedule_trigger
+BEFORE DELETE ON "schedule"
+FOR EACH ROW
+EXECUTE FUNCTION prevent_delete_schedule_with_appointments();
+
+
+
+CREATE OR REPLACE FUNCTION recreate_slot()
+RETURNS TRIGGER AS $$
+BEGIN
+
+    IF EXISTS (SELECT 1 FROM schedule WHERE id = OLD.schedule_id) THEN
+
+        INSERT INTO slot ("time", "blocked", "enabled", "schedule_id")
+        VALUES (OLD.time, OLD.blocked, OLD.enabled, OLD.schedule_id);
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER slot_deleted_trigger
+AFTER DELETE ON slot
+FOR EACH ROW
+EXECUTE FUNCTION recreate_slot();
+
+
+CREATE OR REPLACE FUNCTION check_slot_sum()
+RETURNS TRIGGER AS $$
+DECLARE
+    total_range interval;
+BEGIN
+    SELECT SUM(upper(time)-lower(time))
+    INTO total_range
+    FROM slot
+    WHERE schedule_id = NEW.schedule_id;
+
+    IF total_range >= (SELECT slot_duration FROM schedule WHERE id = NEW.schedule_id) THEN
+        RAISE EXCEPTION 'El horario ya tiene sus bloques asignados';
     END IF;
 
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER slot_overlap_trigger
+CREATE TRIGGER before_insert_slot
 BEFORE INSERT ON slot
 FOR EACH ROW
-EXECUTE FUNCTION validate_slot_overlap();
+EXECUTE FUNCTION check_slot_sum();
+
+
+
+CREATE OR REPLACE FUNCTION check_slot_changes()
+RETURNS TRIGGER AS $$
+BEGIN
+
+    IF NEW."time" <> OLD."time" OR NEW."schedule_id" <> OLD."schedule_id" THEN
+        RAISE EXCEPTION 'Los bloques no pueden cambiarse de horario ni modificar su rango de tiempo';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER slot_check_changes
+BEFORE UPDATE ON "slot"
+FOR EACH ROW
+EXECUTE FUNCTION check_slot_changes();
+
