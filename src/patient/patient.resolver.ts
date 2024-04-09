@@ -28,13 +28,13 @@ export class PatientResolver {
   @Mutation(() => Patient)
   async registerPatient(@Args('input') input: CreatePatientDto) {
     const newPatient: Patient = await this.patientService.create(input);
-    if (newPatient) {
+    /*if (newPatient) {
       this.mailService.registeredPatient(
         newPatient.name,
         newPatient.lastName,
         newPatient.email,
       );
-    }
+    }*/
     return newPatient;
   }
 }

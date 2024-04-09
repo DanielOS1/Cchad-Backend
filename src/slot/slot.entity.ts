@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 
@@ -25,11 +26,19 @@ export class Slot {
   time: string;
 
   @Field()
+  @Column({ default: false })
+  blocked: boolean;
+
+  @Field()
   @Column({ default: true })
   enabled: boolean;
 
   @Field(() => Schedule)
-  @ManyToOne(() => Schedule, (schedule) => schedule.slots)
+  @ManyToOne(() => Schedule, (schedule) => schedule.slots, {
+    onDelete: 'CASCADE',
+    nullable: false,
+  })
+  @JoinColumn({ name: 'schedule_id' })
   schedule: Schedule;
 
   @Field(() => [Appointment], { nullable: 'items' })
@@ -37,10 +46,18 @@ export class Slot {
   appointments: Appointment[];
 
   @Field()
-  @CreateDateColumn({ precision: 0 })
+  @CreateDateColumn({
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   createAt: Date;
 
   @Field()
-  @UpdateDateColumn({ precision: 0 })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   updateAt: Date;
 }

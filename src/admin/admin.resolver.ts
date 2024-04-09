@@ -13,7 +13,7 @@ import { CreatePatientBySecretaryOrAdminDto } from 'src/patient/patient.dto';
 import { PatientService } from 'src/patient/patient.service';
 import { Patient } from 'src/patient/patient.entity';
 import { MailService } from 'src/mail/mail.service';
-import { Role } from 'src/auth/role.enum';
+/*import { Role } from 'src/auth/role.enum';*/
 
 @Resolver()
 export class AdminResolver {
@@ -38,7 +38,7 @@ export class AdminResolver {
       ...input,
       password: randomPassword,
     });
-    if (newAdmin) {
+    /*if (newAdmin) {
       this.mailService.registeredStaff(
         newAdmin.name,
         newAdmin.lastName,
@@ -46,7 +46,8 @@ export class AdminResolver {
         newAdmin.email,
         randomPassword,
       );
-    }
+    }*/
+    console.log(randomPassword);
     return newAdmin;
   }
 
@@ -59,7 +60,7 @@ export class AdminResolver {
       ...input,
       password: randomPassword,
     });
-    if (newSecretary) {
+    /*if (newSecretary) {
       this.mailService.registeredStaff(
         newSecretary.name,
         newSecretary.lastName,
@@ -67,7 +68,8 @@ export class AdminResolver {
         newSecretary.email,
         randomPassword,
       );
-    }
+    }*/
+    console.log(randomPassword);
     return newSecretary;
   }
 
@@ -80,7 +82,7 @@ export class AdminResolver {
       ...input,
       password: randomPassword,
     });
-    if (newMedic) {
+    /*if (newMedic) {
       this.mailService.registeredStaff(
         newMedic.name,
         newMedic.lastName,
@@ -88,7 +90,8 @@ export class AdminResolver {
         newMedic.email,
         randomPassword,
       );
-    }
+    }*/
+    console.log(randomPassword);
     return newMedic;
   }
 
@@ -103,14 +106,15 @@ export class AdminResolver {
       ...input,
       password: randomPassword,
     });
-    if (newPatient) {
+    /*if (newPatient) {
       this.mailService.registeredPatient(
         newPatient.name,
         newPatient.lastName,
         newPatient.email,
         randomPassword,
       );
-    }
+    }*/
+    console.log(randomPassword);
     return newPatient;
   }
 }

@@ -24,7 +24,7 @@ export class Secretary implements User {
   name: string;
 
   @Field()
-  @Column()
+  @Column({ name: 'last_name' })
   lastName: string;
 
   @Field()
@@ -40,11 +40,19 @@ export class Secretary implements User {
   enabled: boolean;
 
   @Field()
-  @CreateDateColumn({ precision: 0 })
+  @CreateDateColumn({
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   createAt: Date;
 
   @Field()
-  @UpdateDateColumn({ precision: 0 })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   updateAt: Date;
 
   @BeforeUpdate()

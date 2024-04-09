@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Medic } from '../medic/medic.entity';
@@ -24,21 +25,17 @@ export class Schedule {
   })
   time: string;
 
-  @Column({
-    type: 'tstzrange',
-    nullable: true,
-  })
-  blockedTime: string;
-
-  @Column({ type: 'interval' })
+  @Column({ type: 'interval', name: 'slot_duration' })
   slotDuration: string;
 
   @Field(() => Medic)
-  @ManyToOne(() => Medic, (medic) => medic.schedules)
+  @ManyToOne(() => Medic, (medic) => medic.schedules, { nullable: false })
+  @JoinColumn({ name: 'medic_id' })
   medic: Medic;
 
   @Field(() => Box)
-  @ManyToOne(() => Box, (box) => box.schedules)
+  @ManyToOne(() => Box, (box) => box.schedules, { nullable: false })
+  @JoinColumn({ name: 'box_id' })
   box: Box;
 
   @Field(() => [Slot], { nullable: 'items' })
@@ -46,10 +43,18 @@ export class Schedule {
   slots: Slot[];
 
   @Field()
-  @CreateDateColumn({ precision: 0 })
+  @CreateDateColumn({
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   createAt: Date;
 
   @Field()
-  @UpdateDateColumn({ precision: 0 })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   updateAt: Date;
 }

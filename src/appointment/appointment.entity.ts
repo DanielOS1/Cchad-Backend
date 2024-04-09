@@ -5,6 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 
@@ -60,26 +61,34 @@ export class Appointment {
   treatment: string;
 
   @Field()
-  @Column()
+  @Column({ name: 'prescription_drugs' })
   prescriptionDrugs: string;
 
   @Field(() => Patient, { nullable: true })
-  @ManyToOne(() => Patient, (patient) => patient.appointments)
+  @ManyToOne(() => Patient, (patient) => patient.appointments, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'patient_id' })
   patient: Patient;
 
   @Field(() => Slot)
-  @ManyToOne(() => Slot, (slot) => slot.appointments)
+  @ManyToOne(() => Slot, (slot) => slot.appointments, { nullable: false })
+  @JoinColumn({ name: 'slot_id' })
   slot: Slot;
 
   @Field()
   @CreateDateColumn({
-    precision: 0,
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
   })
   createAt: Date;
 
   @Field()
   @UpdateDateColumn({
-    precision: 0,
+    name: 'updated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
   })
   updateAt: Date;
 }

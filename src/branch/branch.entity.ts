@@ -36,10 +36,18 @@ export class Branch {
   boxes: Box[];
 
   @Field()
-  @CreateDateColumn({ precision: 0 })
+  @CreateDateColumn({
+    name: 'created_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   createAt: Date;
 
   @Field()
-  @UpdateDateColumn({ precision: 0 })
+  @UpdateDateColumn({
+    name: 'updated_at',
+    default: () => 'CURRENT_TIMESTAMP',
+    type: 'timestamp with time zone',
+  })
   updateAt: Date;
 }

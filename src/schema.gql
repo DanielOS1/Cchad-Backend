@@ -140,7 +140,6 @@ type Secretary {
 type Admin {
   id: Float!
   name: String!
-  lastName: String!
   email: String!
   enabled: Boolean!
   createAt: DateTime!
