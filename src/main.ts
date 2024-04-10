@@ -15,6 +15,12 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   app.enableCors();
+  const utcDate = new Date();
+  console.log('Hora actual en UTC:', utcDate.toISOString());
+  const date = new Date();
+  console.log('Hora actual:', date.toLocaleTimeString());
+  console.log('Timezone:', date.toString().match(/\((.*)\)/)[1]);
+
   await app.listen(3000);
 }
 bootstrap();

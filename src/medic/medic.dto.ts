@@ -88,7 +88,6 @@ export class UpdateMedicDto {
   @NotEquals(null)
   @IsNotEmpty()
   @IsOptional()
-  @IsOptional()
   readonly lastName?: string;
 
   @Field()

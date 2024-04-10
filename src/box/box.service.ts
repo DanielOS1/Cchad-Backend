@@ -13,6 +13,18 @@ export class BoxService {
     private boxRepo: Repository<Box>,
   ) {}
 
+  async getAll(): Promise<Box[]> {
+    return this.boxRepo.find();
+  }
+
+  async getBoxById(id: number): Promise<Box> {
+    const box = await this.boxRepo.findOneBy({ id });
+    if (!box) {
+      throw new NotFoundException('');
+    }
+    return box;
+  }
+
   async getSchedules(id: number): Promise<Schedule[]> {
     const box = await this.boxRepo.findOne({
       where: { id },

@@ -20,6 +20,7 @@ export class Slot {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column({
     type: 'tstzrange',
   })

@@ -26,6 +26,20 @@ export class Branch {
   address: string;
 
   @Field()
+  @Column({
+    name: 'opening_time',
+    type: 'timetz',
+  })
+  openingTime: string;
+
+  @Field()
+  @Column({
+    name: 'closing_time',
+    type: 'timetz',
+  })
+  closingTime: string;
+
+  @Field()
   @Column({ default: true })
   enabled: boolean;
 

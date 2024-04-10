@@ -76,7 +76,9 @@ export class AuthResolver {
   }
 
   @Mutation(() => AuthResult, { nullable: true })
-  async authenticateUser(@Args('input') input: userAuthenticationDto) {
+  async authenticateUser(
+    @Args('input') input: userAuthenticationDto,
+  ): Promise<AuthResult> {
     const user: User = new User();
     let userPassword: string;
     switch (input.role) {
@@ -111,7 +113,7 @@ export class AuthResolver {
 
   @Mutation(() => User, { nullable: true })
   /*@UseGuards(JwtAuthGuard)*/
-  async changePassword(@Args('input') input: changePasswordDto) {
+  async changePassword(@Args('input') input: changePasswordDto): Promise<User> {
     const user: User = new User();
     switch (input.role) {
       case Role.Patient:
@@ -139,7 +141,9 @@ export class AuthResolver {
   }
 
   @Mutation(() => String, { nullable: true })
-  async recoverPassword(@Args('input') input: recoverPasswordDto) {
+  async recoverPassword(
+    @Args('input') input: recoverPasswordDto,
+  ): Promise<string> {
     const randomPassword: string = Math.random().toString(36).slice(2, 10);
     const user: User = new User();
     switch (input.role) {

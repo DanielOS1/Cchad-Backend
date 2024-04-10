@@ -17,6 +17,18 @@ export class MedicService {
     private medicRepo: Repository<Medic>,
   ) {}
 
+  async getAll(): Promise<Medic[]> {
+    return this.medicRepo.find();
+  }
+
+  async getMedicById(id: number): Promise<Medic> {
+    const medic = await this.medicRepo.findOneBy({ id });
+    if (!medic) {
+      throw new NotFoundException('');
+    }
+    return medic;
+  }
+
   async getMedicByEmail(email: string): Promise<Medic> {
     const medic = await this.medicRepo.findOneBy({ email });
     if (!medic) {

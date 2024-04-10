@@ -7,6 +7,7 @@ import {
   OneToMany,
   ManyToOne,
   JoinColumn,
+  BeforeInsert,
 } from 'typeorm';
 import { ObjectType, Field } from '@nestjs/graphql';
 import { Medic } from '../medic/medic.entity';
@@ -20,13 +21,19 @@ export class Schedule {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Field()
   @Column({
     type: 'tstzrange',
   })
   time: string;
 
+  @Field()
   @Column({ type: 'interval', name: 'slot_duration' })
   slotDuration: string;
+
+  @Field()
+  @Column({ default: false })
+  public: boolean;
 
   @Field(() => Medic)
   @ManyToOne(() => Medic, (medic) => medic.schedules, { nullable: false })
@@ -57,4 +64,13 @@ export class Schedule {
     type: 'timestamp with time zone',
   })
   updateAt: Date;
+
+  @BeforeInsert()
+  transformTimeToRange() {
+    // Transformar el string a un formato compatible con tstzrange
+    const [start, end] = this.time
+      .split(';')
+      .map((date) => new Date(date).toISOString());
+    this.time = `[${start},${end})`; // En PostgreSQL, los intervalos cerrados se representan con "[" y ")", lo que significa que el límite inferior está incluido y el límite superior está excluido.
+  }
 }

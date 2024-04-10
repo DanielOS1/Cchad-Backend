@@ -26,6 +26,7 @@ export class AdminService {
   async create(payload: CreateAdminDto): Promise<Admin> {
     const newAdmin = this.adminRepo.create(payload);
     return await this.adminRepo.save(newAdmin).catch((error) => {
+      console.log(error);
       throw new ConflictException(error.message);
     });
   }

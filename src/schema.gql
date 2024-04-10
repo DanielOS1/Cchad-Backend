@@ -65,6 +65,8 @@ type Branch {
   id: Float!
   name: String!
   address: String!
+  openingTime: String!
+  closingTime: String!
   enabled: Boolean!
   boxes: [Box]!
   createAt: DateTime!
@@ -83,6 +85,9 @@ type Box {
 
 type Schedule {
   id: Float!
+  time: String!
+  slotDuration: String!
+  public: Boolean!
   medic: Medic!
   box: Box!
   slots: [Slot]!
@@ -92,6 +97,8 @@ type Schedule {
 
 type Slot {
   id: Float!
+  time: String!
+  blocked: Boolean!
   enabled: Boolean!
   schedule: Schedule!
   appointments: [Appointment]!
@@ -114,6 +121,7 @@ type Appointment {
 }
 
 enum AppointmentState {
+  AVAILABLE
   RESERVED
   RESCHEDULED
   CANCELED
@@ -159,10 +167,18 @@ type AuthResult {
 }
 
 type Query {
+  boxes: [Box!]!
+  box(id: Int!): Box!
+  medics: [Medic!]!
+  medic(id: Int!): Medic!
   testQuery: String!
 }
 
 type Mutation {
+  createMedicSchedule(input: CreateScheduleDto!): Schedule!
+  deleteMedicSchedule(id: Float!): Boolean!
+  blockSlot(id: Float!): Slot!
+  unlockSlot(id: Float!): Slot!
   registerPatient(input: CreatePatientDto!): Patient!
   registerMedic(input: registerMedicDto!): Medic!
   registerSecretary(input: registerSecretaryDto!): Secretary!
@@ -171,6 +187,13 @@ type Mutation {
   authenticateUser(input: userAuthenticationDto!): AuthResult
   changePassword(input: changePasswordDto!): User
   recoverPassword(input: recoverPasswordDto!): String
+}
+
+input CreateScheduleDto {
+  time: String!
+  slotDuration: String!
+  medicId: Float!
+  boxId: Float!
 }
 
 input CreatePatientDto {
