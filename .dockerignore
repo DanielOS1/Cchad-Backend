@@ -1,6 +1,7 @@
 test
 node_modules
 coverage
+.env
 .gitignore
 .git
 README.md
