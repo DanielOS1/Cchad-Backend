@@ -1,4 +1,4 @@
-import { DataSource } from 'typeorm';
+import { DataSource, DataSourceOptions } from "typeorm";
 import { ConfigService } from '@nestjs/config';
 import { config } from 'dotenv';
 
@@ -6,7 +6,7 @@ config();
 
 const configService = new ConfigService();
 
-export const connectionSource = new DataSource({
+export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
   host: configService.get('POSTGRES_HOST'),
   port: parseInt(configService.get('POSTGRES_PORT'), 10),
@@ -15,7 +15,11 @@ export const connectionSource = new DataSource({
   database: configService.get('POSTGRES_DB'),
   logging: true,
   synchronize: false,
-  entities: ['src/**/*.entity.ts'],
-  migrations: ['src/database/migrations/*.ts'],
+  entities: ['dist/**/*.entity.js'],
+  migrations: ['dist/database/migrations/*.js'],
   migrationsTableName: 'migrations',
-});
+};
+
+const dataSource = new DataSource(dataSourceOptions);
+
+export default dataSource;
