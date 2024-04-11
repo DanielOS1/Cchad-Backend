@@ -1,3 +1,15 @@
+FROM node:21 as DEVELOPMENT
+
+WORKDIR /app
+
+COPY . .
+
+RUN npm install --frozen-lockfile
+
+EXPOSE 3000
+
+CMD ["npm", "run", "start:dev"]
+
 FROM node:21 as BUILDER
 
 WORKDIR /app

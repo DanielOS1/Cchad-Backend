@@ -10,3 +10,7 @@ dist
 .editorconfig
 env.example
 postgres_data
+.eslintrc.js
+docker-compose.yml
+Dockerfile
+.dockerignore
