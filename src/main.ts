@@ -21,6 +21,6 @@ async function bootstrap() {
   console.log('Hora actual:', date.toLocaleTimeString());
   console.log('Timezone:', date.toString().match(/\((.*)\)/)[1]);
 
-  await app.listen(3000);
+  await app.listen(process.env.APP_PORT || 3000);
 }
 bootstrap();
