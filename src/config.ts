@@ -7,11 +7,11 @@ export default registerAs('config', () => {
       mailPass: process.env.EMAIL_PASSWORD,
     },
     postgres: {
-      dbName: process.env.POSTGRES_DB,
-      port: parseInt(process.env.POSTGRES_PORT, 10),
-      password: process.env.POSTGRES_PASSWORD,
-      user: process.env.POSTGRES_USER,
-      host: process.env.POSTGRES_HOST,
+      dbName: process.env.DB_NAME,
+      port: parseInt(process.env.DB_PORT, 10),
+      password: process.env.DB_PASSWORD,
+      user: process.env.DB_USER,
+      host: process.env.DB_HOST,
     },
     JwtSecret: process.env.JWT_SECRET,
   };
