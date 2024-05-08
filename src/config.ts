@@ -3,8 +3,8 @@ import { registerAs } from '@nestjs/config';
 export default registerAs('config', () => {
   return {
     nodemailer: {
-      mailUser: process.env.MAILDEV_INCOMING_USER,
-      mailPass: process.env.MAILDEV_INCOMING_PASS,
+      mailUser: process.env.EMAIL_USER,
+      mailPass: process.env.EMAIL_PASSWORD,
     },
     postgres: {
       dbName: process.env.POSTGRES_DB,
