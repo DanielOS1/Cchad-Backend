@@ -3,6 +3,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { config } from 'dotenv';
+import { join } from "path";
 
 import { MailService } from './mail.service';
 
@@ -14,20 +15,19 @@ const configService = new ConfigService();
   imports: [
     MailerModule.forRoot({
       transport: {
-        host: 'smtp.gmail.com',
-        port: 587,
-        ignoreTLS: true,
-        secure: false,
+        host: configService.get('EMAIL_HOST'),
+        port: configService.get('EMAIL_PORT'),
+        secure: configService.get('SMTP_SECURE'),
         auth: {
-          user: configService.get('MAILDEV_INCOMING_USER'),
-          pass: configService.get('MAILDEV_INCOMING_PASS'),
+          user: configService.get('EMAIL_USER'),
+          pass: configService.get('EMAIL_PASSWORD'),
         },
       },
       defaults: {
-        from: '"Centro Médico Cchad" <cchad.atencion@gmail.com>',
+        from: configService.get('EMAIL_FROM'),
       },
       template: {
-        dir: __dirname + '/templates',
+        dir: join(__dirname, 'templates'),
         adapter: new HandlebarsAdapter(),
         options: {
           strict: true,

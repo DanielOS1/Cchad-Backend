@@ -33,6 +33,8 @@ import { MailService } from './mail/mail.service';
 import { MailModule } from './mail/mail.module';
 import { AuthResolver } from './auth/auth.resolver';
 
+import { dataSourceOptions } from './database/dataSource';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -40,32 +42,17 @@ import { AuthResolver } from './auth/auth.resolver';
       load: [config],
       isGlobal: true,
       validationSchema: Joi.object({
-        POSTGRES_DB: Joi.string().required(),
-        POSTGRES_USER: Joi.string().required(),
-        POSTGRES_PASSWORD: Joi.string().required(),
-        POSTGRES_PORT: Joi.number().required(),
-        POSTGRES_HOST: Joi.string().required(),
+        DB_NAME: Joi.string().required(),
+        DB_USER: Joi.string().required(),
+        DB_PASSWORD: Joi.string().required(),
+        DB_PORT: Joi.number().required(),
+        DB_HOST: Joi.string().required(),
         JWT_SECRET: Joi.string().required(),
-        MAILDEV_INCOMING_USER: Joi.string().required(),
-        MAILDEV_INCOMING_PASS: Joi.string().required(),
+        EMAIL_USER: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
       }),
     }),
-    TypeOrmModule.forRootAsync({
-      inject: [config.KEY],
-      useFactory: (configService: ConfigType<typeof config>) => {
-        const { user, host, dbName, password, port } = configService.postgres;
-        return {
-          type: 'postgres',
-          host,
-          port,
-          username: user,
-          password,
-          database: dbName,
-          synchronize: false,
-          autoLoadEntities: true,
-        };
-      },
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     TypeOrmModule.forFeature([Appointment, Box, Branch, Schedule, Slot]),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
