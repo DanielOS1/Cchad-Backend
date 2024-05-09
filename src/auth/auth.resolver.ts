@@ -69,8 +69,6 @@ export class AuthResolver {
   ) {}
 
   @Query(() => String) //ELMINAR DESPUES
-  @Roles(Role.Medic, Role.Patient, Role.Admin)
-  @UseGuards(JwtAuthGuard, RolesGuard)
   async testQuery() {
     return 'success';
   }
