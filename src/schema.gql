@@ -123,7 +123,6 @@ type Appointment {
 enum AppointmentState {
   Reservada
   Reprogramada
-  Cancelada
   Completada
 }
 
@@ -180,6 +179,7 @@ type Mutation {
   confirmAppointment(id: Float!): Appointment!
   createMedicSchedule(input: CreateScheduleDto!): Schedule!
   deleteMedicSchedule(id: Float!): Boolean!
+  publishSchedules: Boolean!
   blockSlot(id: Float!): Slot!
   unlockSlot(id: Float!): Slot!
   registerPatient(input: CreatePatientDto!): Patient!

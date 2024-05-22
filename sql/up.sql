@@ -82,7 +82,7 @@ CREATE TABLE "patient" (
 );
 
 -- Create enum type appointment_state_enum
-CREATE TYPE "public"."appointment_state_enum" AS ENUM('Reservada', 'Reprogramada', 'Cancelada', 'Completada');
+CREATE TYPE "public"."appointment_state_enum" AS ENUM('Reservada', 'Reprogramada', 'Completada');
 
 -- Create enum type appointment_type_enum
 CREATE TYPE "public"."appointment_type_enum" AS ENUM('Consulta', 'Control', 'Procedimiento');

@@ -15,7 +15,6 @@ import { Slot } from '../slot/slot.entity';
 export enum appointmentState {
   Reservada = 'Reservada',
   Reprogramada = 'Reprogramada',
-  Cancelada = 'Cancelada',
   Completada = 'Completada',
 }
 
