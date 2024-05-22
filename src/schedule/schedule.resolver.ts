@@ -50,4 +50,12 @@ export class ScheduleResolver {
   async deleteMedicSchedule(@Args('id') id: number): Promise<boolean> {
     return await this.scheduleService.delete(id);
   }
+
+  @Mutation(() => Boolean)
+  /*@Roles(Role.Admin, Role.Secretary)
+  @UseGuards(JwtAuthGuard, RolesGuard)*/
+  async publishSchedules(): Promise<boolean> {
+    await this.scheduleService.publish();
+    return true;
+  }
 }

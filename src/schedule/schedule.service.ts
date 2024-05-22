@@ -47,6 +47,20 @@ export class ScheduleService {
     return true;
   }
 
+  async publish(): Promise<void> {
+    const schedules = await this.scheduleRepo.find({
+      where: { public: false },
+    });
+    for (const schedule of schedules) {
+      schedule.public = true;
+    }
+    if (schedules.length > 0) {
+      await this.scheduleRepo.save(schedules).catch((error) => {
+        throw new ConflictException(error.message);
+      });
+    }
+  }
+
   async getMedic(id: number): Promise<Medic> {
     const schedule = await this.scheduleRepo.findOne({
       where: { id },
