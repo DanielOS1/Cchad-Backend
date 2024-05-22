@@ -82,7 +82,7 @@ CREATE TABLE "patient" (
 );
 
 -- Create enum type appointment_state_enum
-CREATE TYPE "public"."appointment_state_enum" AS ENUM('Disponible', 'Reservada', 'Reprogramada', 'Cancelada', 'Completada');
+CREATE TYPE "public"."appointment_state_enum" AS ENUM('Reservada', 'Reprogramada', 'Cancelada', 'Completada');
 
 -- Create enum type appointment_type_enum
 CREATE TYPE "public"."appointment_type_enum" AS ENUM('Consulta', 'Control', 'Procedimiento');
@@ -90,12 +90,12 @@ CREATE TYPE "public"."appointment_type_enum" AS ENUM('Consulta', 'Control', 'Pro
 -- Create table appointment
 CREATE TABLE "appointment" (
     "id" SERIAL NOT NULL,
-    "state" "public"."appointment_state_enum" NOT NULL,
+    "state" "public"."appointment_state_enum" NOT NULL DEFAULT 'Reservada',
     "confirmed" boolean NOT NULL DEFAULT false,
     "type" "public"."appointment_type_enum" NOT NULL,
-    "diagnosis" character varying NOT NULL,
-    "treatment" character varying NOT NULL,
-    "prescription_drugs" character varying NOT NULL,
+    "diagnosis" character varying,
+    "treatment" character varying,
+    "prescription_drugs" character varying,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     "patient_id" integer NOT NULL,

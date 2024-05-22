@@ -35,7 +35,7 @@ services:
       JWT_SECRET: ${JWT_SECRET}
       APP_PORT: ${APP_PORT}
     ports:
-      - ${APP_PORT}:3000
+      - ${APP_PORT}:${APP_PORT}
     depends_on:
       db:
         condition: service_healthy

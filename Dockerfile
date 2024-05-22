@@ -1,36 +1,22 @@
-FROM node:21 as DEVELOPMENT
+# Based on https://www.tomray.dev/nestjs-docker-production
 
-WORKDIR /app
+# Base image
+FROM node:21
 
+# Create app directory
+WORKDIR /usr/src/app
+
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
+COPY package*.json ./
+
+# Install app dependencies
+RUN npm install
+
+# Bundle app source
 COPY . .
 
-RUN npm install --frozen-lockfile
+# Creates a "dist" folder with the production build
+RUN npm run build
 
-EXPOSE 3000
-
-CMD ["npm", "run", "start:dev"]
-
-FROM node:21 as BUILDER
-
-WORKDIR /app
-
-COPY package.json ./
-
-RUN npm install  --frozen-lockfile
-
-COPY . .
-
-RUN npm run build; \
-  npm install --production --prefer-offline
-
-FROM node:21 as PRODUCTION
-
-WORKDIR /app
-
-COPY --from=BUILDER /app/package.json ./
-COPY --from=BUILDER /app/dist ./dist
-COPY --from=BUILDER /app/node_modules ./node_modules
-
-EXPOSE 3000
-
-CMD ["npm", "run", "start:prod"]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]

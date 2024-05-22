@@ -121,17 +121,16 @@ type Appointment {
 }
 
 enum AppointmentState {
-  AVAILABLE
-  RESERVED
-  RESCHEDULED
-  CANCELED
-  COMPLETED
+  Reservada
+  Reprogramada
+  Cancelada
+  Completada
 }
 
 enum AppointmentType {
-  CONSULT
-  CONTROL
-  PROCEDURE
+  Consulta
+  Control
+  Procedimiento
 }
 
 type Secretary {
@@ -175,6 +174,10 @@ type Query {
 }
 
 type Mutation {
+  bookAppointment(input: CreateAppointmentDto!): Appointment!
+  rescheduleAppointment(input: RescheduleAppointmentDto!): Appointment!
+  cancelAppointment(id: Float!): Boolean!
+  confirmAppointment(id: Float!): Appointment!
   createMedicSchedule(input: CreateScheduleDto!): Schedule!
   deleteMedicSchedule(id: Float!): Boolean!
   blockSlot(id: Float!): Slot!
@@ -187,6 +190,17 @@ type Mutation {
   authenticateUser(input: userAuthenticationDto!): AuthResult
   changePassword(input: changePasswordDto!): User
   recoverPassword(input: recoverPasswordDto!): String
+}
+
+input CreateAppointmentDto {
+  type: String!
+  patientId: Float!
+  slotId: Float!
+}
+
+input RescheduleAppointmentDto {
+  appointmentId: Float!
+  newSlotId: Float!
 }
 
 input CreateScheduleDto {

@@ -8,11 +8,11 @@ const configService = new ConfigService();
 
 export const dataSourceOptions: DataSourceOptions = {
   type: 'postgres',
-  host: configService.get('POSTGRES_HOST'),
-  port: parseInt(configService.get('POSTGRES_PORT'), 10),
-  username: configService.get('POSTGRES_USER'),
-  password: configService.get('POSTGRES_PASSWORD'),
-  database: configService.get('POSTGRES_DB'),
+  host: configService.get('DB_HOST'),
+  port: parseInt(configService.get('DB_PORT'), 10),
+  username: configService.get('DB_USER'),
+  password: configService.get('DB_PASSWORD'),
+  database: configService.get('DB_NAME'),
   logging: true,
   synchronize: false,
   entities: ['dist/**/*.entity.js'],

@@ -12,22 +12,21 @@ import { ObjectType, Field, registerEnumType } from '@nestjs/graphql';
 import { Patient } from '../patient/patient.entity';
 import { Slot } from '../slot/slot.entity';
 
-enum appointmentState {
-  AVAILABLE = 'Disponible',
-  RESERVED = 'Reservada',
-  RESCHEDULED = 'Reprogramada',
-  CANCELED = 'Cancelada',
-  COMPLETED = 'Completada',
+export enum appointmentState {
+  Reservada = 'Reservada',
+  Reprogramada = 'Reprogramada',
+  Cancelada = 'Cancelada',
+  Completada = 'Completada',
 }
 
 registerEnumType(appointmentState, {
   name: 'AppointmentState',
 });
 
-enum appointmentType {
-  CONSULT = 'Consulta',
-  CONTROL = 'Control',
-  PROCEDURE = 'Procedimiento',
+export enum appointmentType {
+  Consulta = 'Consulta',
+  Control = 'Control',
+  Procedimiento = 'Procedimiento',
 }
 
 registerEnumType(appointmentType, {
@@ -42,7 +41,11 @@ export class Appointment {
   id: number;
 
   @Field(() => appointmentState)
-  @Column({ type: 'enum', enum: appointmentState })
+  @Column({
+    type: 'enum',
+    enum: appointmentState,
+    default: appointmentState.Reservada,
+  })
   state: appointmentState;
 
   @Field()
@@ -54,15 +57,15 @@ export class Appointment {
   type: appointmentType;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   diagnosis: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   treatment: string;
 
   @Field()
-  @Column({ name: 'prescription_drugs' })
+  @Column({ name: 'prescription_drugs', nullable: true })
   prescriptionDrugs: string;
 
   @Field(() => Patient, { nullable: true })
