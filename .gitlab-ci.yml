@@ -1,23 +1,23 @@
-variables:
-  IMAGE_NAME: "cchad-backend"
-  IMAGE_TAG: $CI_COMMIT_TAG
-  DOCKER_TLS_CERTDIR: "" # https://gitlab.com/gitlab-org/gitlab-runner/-/issues/4501
+include:
+  - component: gitlab.com/to-be-continuous/docker/gitlab-ci-docker@5.10.2
+    inputs:
+      release-extra-tags: latest
+      hadolint-args: -terror
+      trivy-disabled: true
+      sbom-disabled: true
+      build-cache-disabled: true
+    rules:
+      - changes:
+        - Dockerfile
+        - src/**/*
+        - package.json
+      - if: $CI_PIPELINE_SOURCE == "web"
+      - if: $CI_COMMIT_TAG
 
-stages:
-  - build_push
-
-build-push-image:
-  image: docker:26.1.1
-  services:
-    - docker:26.1.1-dind
-  stage: build_push
-  before_script:
-    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
-  script:
-    - docker build -t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG .
-    - docker tag $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest
+# Si no se cumplen las reglas de include:component, no se incluyen los jobs, haciendo que falle el pipeline
+# https://gitlab.com/gitlab-org/gitlab/-/issues/341693
+dummy:
   rules:
-    - if: $CI_PIPELINE_SOURCE == "web"
-    - if: $CI_COMMIT_TAG
+    - when: never
+  script:
+    - exit 0
