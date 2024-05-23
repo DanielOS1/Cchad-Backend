@@ -378,6 +378,68 @@ EXECUTE FUNCTION check_slot_changes();
 
 
 
+CREATE OR REPLACE FUNCTION check_slot_references()
+RETURNS TRIGGER AS $$
+DECLARE
+    slot_record RECORD;
+BEGIN
+    -- Obtener la información del slot y su schedule
+    SELECT s.blocked, sch.public
+    INTO slot_record
+    FROM slot s
+    JOIN schedule sch ON s.schedule_id = sch.id
+    WHERE s.id = NEW.slot_id;
+
+    -- Verificar que el slot no esté bloqueado
+    IF slot_record.blocked THEN
+        RAISE EXCEPTION 'El slot está bloqueado';
+    END IF;
+
+    -- Verificar que el schedule sea público
+    IF NOT slot_record.public THEN
+        RAISE EXCEPTION 'El schedule del slot no es público';
+    END IF;
+
+    -- Verificar si el slot_id ya tiene más de dos referencias en appointments
+    IF (SELECT COUNT(*) FROM appointment WHERE slot_id = NEW.slot_id) >= 2 THEN
+        RAISE EXCEPTION 'Este bloque ya tiene sobrecupo con dos citas';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_slot_references_trigger
+BEFORE INSERT OR UPDATE ON appointment
+FOR EACH ROW
+EXECUTE FUNCTION check_slot_references();
+
+
+
+CREATE OR REPLACE FUNCTION check_delete_appointment_time()
+RETURNS TRIGGER AS $$
+DECLARE
+    slot_start_time TIMESTAMPTZ;
+BEGIN
+    -- Obtener el tiempo de inicio del slot asociado al appointment
+    SELECT LOWER(time) INTO slot_start_time FROM slot WHERE id = OLD.slot_id;
+
+    -- Verificar si faltan al menos 24 horas para el comienzo del slot
+    IF slot_start_time - interval '24 hours' <= now() THEN
+        RAISE EXCEPTION 'No se puede eliminar el appointment con menos de 24 horas de anticipación antes del comienzo de su slot';
+    END IF;
+
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_delete_appointment_trigger
+BEFORE DELETE ON appointment
+FOR EACH ROW
+EXECUTE FUNCTION check_delete_appointment_time();
+
+
+
 INSERT INTO "branch" ("name", "address", "opening_time", "closing_time")
 VALUES ('UCN Campus Guayacan', 'Larrondo 1281', '08:00:00-04', '20:00:00-04');
 
