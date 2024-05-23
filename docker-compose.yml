@@ -1,3 +1,6 @@
+# NOTE: Este es un compose minimalista hecho para probar el backend, para el deploy completo mira:
+# https://gitlab.com/cchadpip/cchad-deploy
+
 services:
   db:
     image: postgres:16
@@ -7,15 +10,13 @@ services:
       - ./sql/up.sql:/docker-entrypoint-initdb.d/up.sql
     networks:
       - bridge-network
-    ports:
-      - '5432:5432'
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U postgres']
       interval: 15s
       timeout: 15s
       retries: 4
 
-  backend-dev:
+  backend:
     build:
       context: ./
       dockerfile: Dockerfile
@@ -32,24 +33,11 @@ services:
       EMAIL_HOST: ${EMAIL_HOST}
       SMTP_SECURE: ${SMTP_SECURE}
       JWT_SECRET: ${JWT_SECRET}
-      APP_PORT: ${APP_PORT}
     ports:
-      - ${APP_PORT}:${APP_PORT}
+      - ${APP_PORT}:3000
     depends_on:
       db:
         condition: service_healthy
-    volumes:
-      - ./src:/app/src
-    networks:
-      - bridge-network
-
-  pgadmin:
-    image: dpage/pgadmin4
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=root@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
-    ports:
-      - '5050:80'
     networks:
       - bridge-network
 
