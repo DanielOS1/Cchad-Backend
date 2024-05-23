@@ -19,7 +19,6 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-      target: DEVELOPMENT
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
