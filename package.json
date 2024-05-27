@@ -1,8 +1,8 @@
 {
   "name": "cchad-backend",
-  "version": "0.0.2",
-  "description": "Backend de Cchad hecho con NestJS.",
-  "author": "Cchad Team",
+  "version": "0.1.0-alpha1",
+  "description": "Backend de CChad hecho con NestJS.",
+  "author": "CChad Team",
   "private": true,
   "license": "GPL-3.0",
   "scripts": {
