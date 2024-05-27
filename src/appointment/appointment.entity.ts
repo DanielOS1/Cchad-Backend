@@ -55,15 +55,15 @@ export class Appointment {
   @Column({ type: 'enum', enum: appointmentType })
   type: appointmentType;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   diagnosis: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   treatment: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ name: 'prescription_drugs', nullable: true })
   prescriptionDrugs: string;
 

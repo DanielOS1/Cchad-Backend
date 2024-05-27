@@ -410,7 +410,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER check_slot_references_trigger
-BEFORE INSERT OR UPDATE ON appointment
+BEFORE INSERT OR UPDATE OF slot_id ON appointment
 FOR EACH ROW
 EXECUTE FUNCTION check_slot_references();
 
@@ -437,6 +437,70 @@ CREATE TRIGGER check_delete_appointment_trigger
 BEFORE DELETE ON appointment
 FOR EACH ROW
 EXECUTE FUNCTION check_delete_appointment_time();
+
+
+
+-- Crear la función del trigger
+CREATE OR REPLACE FUNCTION check_appointment_modification()
+RETURNS TRIGGER AS $$
+DECLARE
+    slot_date DATE;
+    currentdate DATE;
+BEGIN
+    -- Obtener la fecha del slot correspondiente
+    SELECT DATE(lower(time)) INTO slot_date FROM slot WHERE id = NEW.slot_id;
+
+    -- Obtener la fecha actual
+    currentdate := CURRENT_DATE;
+
+    -- Verificar si la fecha actual es la misma fecha del slot
+    IF currentdate != slot_date THEN
+        RAISE EXCEPTION 'Diagnosis, treatment, and prescription drugs can only be modified on the day of the appointment';
+    END IF;
+
+    -- Verificar si el estado de la cita no es "Completada"
+    IF OLD.state = 'Completada' THEN
+        RAISE EXCEPTION 'Diagnosis, treatment, and prescription drugs cannot be modified for a completed appointment';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Crear el trigger
+CREATE TRIGGER check_appointment_modification_trigger
+BEFORE UPDATE OF diagnosis, treatment, prescription_drugs ON appointment
+FOR EACH ROW
+EXECUTE FUNCTION check_appointment_modification();
+
+
+
+CREATE OR REPLACE FUNCTION check_appointment_completion()
+RETURNS TRIGGER AS $$
+DECLARE
+    slot_date DATE;
+    currentdate DATE;
+BEGIN
+    -- Obtener la fecha del slot correspondiente
+    SELECT DATE(lower(time)) INTO slot_date FROM slot WHERE id = NEW.slot_id;
+
+    -- Obtener la fecha actual
+    currentdate := CURRENT_DATE;
+
+    -- Verificar si la fecha actual es la misma o posterior a la fecha del slot
+    IF currentdate < slot_date THEN
+        RAISE EXCEPTION 'The appointment can only be marked as Completed on the day of the slot or later';
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER check_appointment_completion_trigger
+BEFORE UPDATE OF state ON appointment
+FOR EACH ROW
+WHEN (NEW.state = 'Completada')
+EXECUTE FUNCTION check_appointment_completion();
 
 
 

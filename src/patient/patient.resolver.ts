@@ -1,7 +1,9 @@
 import {
   Args,
+  Int,
   Mutation,
   Parent,
+  Query,
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
@@ -23,6 +25,16 @@ export class PatientResolver {
   async appointments(@Parent() patient: Patient) {
     const { id } = patient;
     return this.patientService.getAppointments(id);
+  }
+
+  @Query(() => [Patient])
+  async patients(): Promise<Patient[]> {
+    return this.patientService.getAll();
+  }
+
+  @Query(() => Patient)
+  async patient(@Args('id', { type: () => Int }) id: number): Promise<Patient> {
+    return this.patientService.getPatientById(id);
   }
 
   @Mutation(() => Patient)
