@@ -6,12 +6,13 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Appointment } from './appointment.entity';
+import { Appointment, appointmentState } from './appointment.entity';
 import { Patient } from 'src/patient/patient.entity';
 import { Slot } from 'src/slot/slot.entity';
 import {
   CreateAppointmentDto,
   RescheduleAppointmentDto,
+  UpdateMedicalRecordDto,
 } from './appointment.dto';
 
 @Injectable()
@@ -22,6 +23,25 @@ export class AppointmentService {
     @InjectRepository(Patient) private patientRepo: Repository<Patient>,
     @InjectRepository(Slot) private slotRepo: Repository<Slot>,
   ) {}
+
+  async medicalHistory(patientId: number): Promise<Appointment[]> {
+    const patient = await this.patientRepo.findOne({
+      where: { id: patientId },
+      relations: ['appointments'],
+    });
+    if (!patient) {
+      throw new NotFoundException('');
+    }
+    const appointments = await this.appointmentRepo.find({
+      where: {
+        patient: { id: patientId },
+        state: appointmentState.Completada,
+      },
+      relations: ['patient'],
+    });
+
+    return appointments;
+  }
 
   async create(payload: CreateAppointmentDto): Promise<Appointment> {
     const patient = await this.patientRepo.findOneBy({ id: payload.patientId });
@@ -77,6 +97,31 @@ export class AppointmentService {
     }
     await this.appointmentRepo.remove(appointment);
     return appointment;
+  }
+
+  async updateMedicalRecord(
+    id: number,
+    payload: UpdateMedicalRecordDto,
+  ): Promise<Appointment> {
+    const appointment = await this.appointmentRepo.findOneBy({ id });
+    if (!appointment) {
+      throw new NotFoundException('');
+    }
+    this.appointmentRepo.merge(appointment, payload);
+    return await this.appointmentRepo.save(appointment).catch((error) => {
+      throw new ConflictException(error.message);
+    });
+  }
+
+  async complete(id: number): Promise<Appointment> {
+    const appointment = await this.appointmentRepo.findOneBy({ id });
+    if (!appointment) {
+      throw new NotFoundException('');
+    }
+    appointment.state = appointmentState.Completada;
+    return await this.appointmentRepo.save(appointment).catch((error) => {
+      throw new ConflictException(error.message);
+    });
   }
 
   async getPatient(id: number): Promise<Patient> {

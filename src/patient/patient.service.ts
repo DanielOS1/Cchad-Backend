@@ -17,6 +17,18 @@ export class PatientService {
     private patientRepo: Repository<Patient>,
   ) {}
 
+  async getAll(): Promise<Patient[]> {
+    return this.patientRepo.find();
+  }
+
+  async getPatientById(id: number): Promise<Patient> {
+    const patient = await this.patientRepo.findOneBy({ id });
+    if (!patient) {
+      throw new NotFoundException('');
+    }
+    return patient;
+  }
+
   async getPatientByEmail(email: string): Promise<Patient> {
     const patient = await this.patientRepo.findOneBy({ email });
     if (!patient) {

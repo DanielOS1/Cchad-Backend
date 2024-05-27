@@ -111,9 +111,9 @@ type Appointment {
   state: AppointmentState!
   confirmed: Boolean!
   type: AppointmentType!
-  diagnosis: String!
-  treatment: String!
-  prescriptionDrugs: String!
+  diagnosis: String
+  treatment: String
+  prescriptionDrugs: String
   patient: Patient
   slot: Slot!
   createAt: DateTime!
@@ -165,8 +165,11 @@ type AuthResult {
 }
 
 type Query {
+  medicalHistory(patientId: Int!): [Appointment!]!
   boxes: [Box!]!
   box(id: Int!): Box!
+  patients: [Patient!]!
+  patient(id: Int!): Patient!
   medics: [Medic!]!
   medic(id: Int!): Medic!
   testQuery: String!
@@ -177,6 +180,8 @@ type Mutation {
   rescheduleAppointment(input: RescheduleAppointmentDto!): Appointment!
   cancelAppointment(id: Float!): Boolean!
   confirmAppointment(id: Float!): Appointment!
+  updateMedicalRecord(id: Float!, input: UpdateMedicalRecordDto!): Appointment!
+  completeAppointment(id: Float!): Appointment!
   createMedicSchedule(input: CreateScheduleDto!): Schedule!
   deleteMedicSchedule(id: Float!): Boolean!
   publishSchedules: Boolean!
@@ -201,6 +206,12 @@ input CreateAppointmentDto {
 input RescheduleAppointmentDto {
   appointmentId: Float!
   newSlotId: Float!
+}
+
+input UpdateMedicalRecordDto {
+  diagnosis: String
+  treatment: String
+  prescriptionDrugs: String
 }
 
 input CreateScheduleDto {

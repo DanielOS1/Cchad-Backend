@@ -1,7 +1,9 @@
 import {
   Args,
+  Int,
   Mutation,
   Parent,
+  Query,
   ResolveField,
   Resolver,
 } from '@nestjs/graphql';
@@ -13,6 +15,7 @@ import { AppointmentService } from './appointment.service';
 import {
   CreateAppointmentDto,
   RescheduleAppointmentDto,
+  UpdateMedicalRecordDto,
 } from './appointment.dto';
 
 @Resolver(() => Appointment)
@@ -29,6 +32,13 @@ export class AppointmentResolver {
   async slot(@Parent() appointment: Appointment) {
     const { id } = appointment;
     return this.appointmentService.getSlot(id);
+  }
+
+  @Query(() => [Appointment])
+  async medicalHistory(
+    @Args('patientId', { type: () => Int }) patientId: number,
+  ): Promise<Appointment[]> {
+    return this.appointmentService.medicalHistory(patientId);
   }
 
   @Mutation(() => Appointment)
@@ -64,5 +74,22 @@ export class AppointmentResolver {
   @UseGuards(JwtAuthGuard, RolesGuard)*/
   async confirmAppointment(@Args('id') id: number): Promise<Appointment> {
     return await this.appointmentService.confirm(id);
+  }
+
+  @Mutation(() => Appointment)
+  /*@Roles(Role.Patient, Role.Secretary, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)*/
+  async updateMedicalRecord(
+    @Args('id') id: number,
+    @Args('input') input: UpdateMedicalRecordDto,
+  ): Promise<Appointment> {
+    return await this.appointmentService.updateMedicalRecord(id, input);
+  }
+
+  @Mutation(() => Appointment)
+  /*@Roles(Role.Patient, Role.Secretary, Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)*/
+  async completeAppointment(@Args('id') id: number): Promise<Appointment> {
+    return await this.appointmentService.complete(id);
   }
 }
