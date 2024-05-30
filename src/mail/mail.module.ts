@@ -36,6 +36,9 @@ const configService = new ConfigService();
           strict: true,
         },
       },
+      options: {
+        inlineCssEnabled: false
+      }
     }),
   ],
   providers: [MailService],
