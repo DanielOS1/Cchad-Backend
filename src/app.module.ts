@@ -59,7 +59,7 @@ import { dataSourceOptions } from './database/dataSource';
       installSubscriptionHandlers: true,
       autoSchemaFile: process.env.NODE_ENV === 'production' ? true : join(process.cwd(), 'src/schema.gql'),
       playground: process.env.NODE_ENV !== 'production', // Playground habilitado solo en desarrollo
-      csrfPrevention: process.env.CSRF_PREVENTION === 'true',
+      csrfPrevention: process.env.CSRF_PREVENTION === 'false' ? false : true,
     }),
     AuthModule,
     MailModule,
