@@ -57,7 +57,9 @@ import { dataSourceOptions } from './database/dataSource';
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       installSubscriptionHandlers: true,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile: process.env.NODE_ENV === 'production' ? true : join(process.cwd(), 'src/schema.gql'),
+      playground: process.env.NODE_ENV !== 'production', // Playground habilitado solo en desarrollo
+      csrfPrevention: process.env.CSRF_PREVENTION === 'true',
     }),
     AuthModule,
     MailModule,
