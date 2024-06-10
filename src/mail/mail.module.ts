@@ -22,6 +22,9 @@ const configService = new ConfigService();
           user: configService.get('EMAIL_USER'),
           pass: configService.get('EMAIL_PASSWORD'),
         },
+        tls: {
+          rejectUnauthorized: false
+        }
       },
       defaults: {
         from: configService.get('EMAIL_FROM'),
@@ -33,8 +36,11 @@ const configService = new ConfigService();
           strict: true,
         },
       },
+      options: {
+        inlineCssEnabled: false
+      }
     }),
   ],
   providers: [MailService],
 })
-export class MailModule {}
+export class MailModule { }
