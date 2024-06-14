@@ -35,8 +35,8 @@ CREATE TABLE "branch" (
     "id" SERIAL NOT NULL,
     "name" character varying NOT NULL,
     "address" character varying NOT NULL,
-    "opening_time" TIME WITH TIME ZONE NOT NULL,
-    "closing_time" TIME WITH TIME ZONE NOT NULL,
+    "opening_time" TIME WITHOUT TIME ZONE NOT NULL,
+    "closing_time" TIME WITHOUT TIME ZONE NOT NULL,
     "enabled" boolean NOT NULL DEFAULT true,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -106,7 +106,7 @@ CREATE TABLE "appointment" (
 -- Create table slot
 CREATE TABLE "slot" (
     "id" SERIAL NOT NULL,
-    "time" tstzrange NOT NULL,
+    "time" tsrange NOT NULL,
     "blocked" boolean NOT NULL DEFAULT false,
     "enabled" boolean NOT NULL DEFAULT true,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -118,7 +118,7 @@ CREATE TABLE "slot" (
 -- Create table schedule
 CREATE TABLE "schedule" (
     "id" SERIAL NOT NULL,
-    "time" tstzrange NOT NULL,
+    "time" tsrange NOT NULL,
     "slot_duration" interval NOT NULL,
     "public" boolean NOT NULL DEFAULT false,
     "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
@@ -154,7 +154,7 @@ ALTER TABLE "schedule" ADD CONSTRAINT "FK_840dccc6f12adb02c27b2bb3ab3" FOREIGN K
 CREATE OR REPLACE FUNCTION create_slots()
 RETURNS TRIGGER AS $$
 DECLARE
-    block_range tstzrange;
+    block_range tsrange;
     num_blocks FLOAT; -- Cambiado a FLOAT para manejar fracciones de bloques
 BEGIN
     num_blocks := EXTRACT(EPOCH FROM upper(NEW.time) - lower(NEW.time)) / EXTRACT(EPOCH FROM NEW.slot_duration);
@@ -162,7 +162,7 @@ BEGIN
     -- Validar si num_blocks es un número entero
     IF num_blocks = ROUND(num_blocks) THEN
         FOR i IN 0..num_blocks-1 LOOP
-            block_range := tstzrange(lower(NEW.time) + (i*NEW.slot_duration), lower(NEW.time) + ((i+1)*NEW.slot_duration), '[]');
+            block_range := tsrange(lower(NEW.time) + (i*NEW.slot_duration), lower(NEW.time) + ((i+1)*NEW.slot_duration), '[]');
             INSERT INTO "slot" ("schedule_id", "time")
             VALUES (NEW.id, block_range);
         END LOOP;
@@ -185,9 +185,9 @@ EXECUTE FUNCTION create_slots();
 CREATE OR REPLACE FUNCTION validate_schedule_overlap()
 RETURNS TRIGGER AS $$
 DECLARE
-    branch_opening_time TIME WITH TIME ZONE;
-    branch_closing_time TIME WITH TIME ZONE;
-    time_range tstzrange;
+    branch_opening_time TIME WITHOUT TIME ZONE;
+    branch_closing_time TIME WITHOUT TIME ZONE;
+    time_range tsrange;
     medic_enabled BOOLEAN;
     box_enabled BOOLEAN;
     branch_enabled BOOLEAN;
@@ -215,8 +215,8 @@ BEGIN
     INNER JOIN box bx ON b.id = bx.branch_id
     WHERE bx.id = NEW.box_id;
 
-    time_range := tstzrange(lower(NEW.time)::timestamp with time zone::date + branch_opening_time,
-                             upper(NEW.time)::timestamp with time zone::date + branch_closing_time);
+    time_range := tsrange(lower(NEW.time)::timestamp without time zone::date + branch_opening_time,
+                             upper(NEW.time)::timestamp without time zone::date + branch_closing_time);
 
     -- Validar solapamiento con el horario de atención del branch
     IF NOT (lower(NEW.time) >= lower(time_range) AND upper(NEW.time) <= upper(time_range)) THEN
@@ -227,7 +227,7 @@ BEGIN
         SELECT 1
         FROM schedule s
         WHERE NEW.medic_id = s.medic_id
-        AND tstzrange(NEW.time) && s.time
+        AND tsrange(NEW.time) && s.time
         AND s.id != NEW.id
     ) THEN
         RAISE EXCEPTION 'El médico ya tiene otro horario registrado al mismo tiempo';
@@ -237,7 +237,7 @@ BEGIN
         SELECT 1
         FROM schedule s
         WHERE NEW.box_id = s.box_id
-        AND tstzrange(NEW.time) && s.time
+        AND tsrange(NEW.time) && s.time
         AND s.id != NEW.id
     ) THEN
         RAISE EXCEPTION 'El box está siendo utilizado en otro horario al mismo tiempo';
@@ -419,7 +419,7 @@ EXECUTE FUNCTION check_slot_references();
 CREATE OR REPLACE FUNCTION check_delete_appointment_time()
 RETURNS TRIGGER AS $$
 DECLARE
-    slot_start_time TIMESTAMPTZ;
+    slot_start_time TIMESTAMP;
 BEGIN
     -- Obtener el tiempo de inicio del slot asociado al appointment
     SELECT LOWER(time) INTO slot_start_time FROM slot WHERE id = OLD.slot_id;
@@ -505,7 +505,7 @@ EXECUTE FUNCTION check_appointment_completion();
 
 
 INSERT INTO "branch" ("name", "address", "opening_time", "closing_time")
-VALUES ('UCN Campus Guayacan', 'Larrondo 1281', '08:00:00-04', '20:00:00-04');
+VALUES ('UCN Campus Guayacan', 'Larrondo 1281', '08:00:00', '20:00:00');
 
 INSERT INTO "box" ("name", "branch_id") VALUES ('Box1', 1);
 INSERT INTO "box" ("name", "branch_id") VALUES ('Box2', 1);
@@ -518,4 +518,4 @@ INSERT INTO "medic" ("name", "last_name", "email", "password", "specialty")
 VALUES ('Jane', 'Smith', 'janesmith@example.com', 'securepassword456', 'Neurología');
 
 INSERT INTO "schedule" ("time", "slot_duration", "medic_id", "box_id")
-VALUES (TSTZRANGE('2024-04-09 08:00:00-04', '2024-04-09 12:00:00-04'), '01:00:00', 1, 1);
+VALUES (TSRANGE('2024-04-09 08:00:00', '2024-04-09 12:00:00'), '01:00:00', 1, 1);

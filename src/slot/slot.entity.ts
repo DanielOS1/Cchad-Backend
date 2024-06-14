@@ -22,7 +22,7 @@ export class Slot {
 
   @Field()
   @Column({
-    type: 'tstzrange',
+    type: 'tsrange',
   })
   time: string;
 
