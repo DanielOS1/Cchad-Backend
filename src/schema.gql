@@ -168,6 +168,8 @@ type Query {
   medicalHistory(patientId: Int!): [Appointment!]!
   boxes: [Box!]!
   box(id: Int!): Box!
+  branches: [Branch!]!
+  branch(id: Int!): Branch!
   patients: [Patient!]!
   patient(id: Int!): Patient!
   medics: [Medic!]!
@@ -182,6 +184,14 @@ type Mutation {
   confirmAppointment(id: Float!): Appointment!
   updateMedicalRecord(id: Float!, input: UpdateMedicalRecordDto!): Appointment!
   completeAppointment(id: Float!): Appointment!
+  createBox(input: CreateBoxDto!): Box!
+  deleteBox(id: Float!): Boolean!
+  disableBox(id: Float!): Box!
+  enableBox(id: Float!): Box!
+  createBranch(input: CreateBranchDto!): Branch!
+  deleteBranch(id: Float!): Boolean!
+  disableBranch(id: Float!): Branch!
+  enableBranch(id: Float!): Branch!
   createMedicSchedule(input: CreateScheduleDto!): Schedule!
   deleteMedicSchedule(id: Float!): Boolean!
   publishSchedules: Boolean!
@@ -212,6 +222,18 @@ input UpdateMedicalRecordDto {
   diagnosis: String
   treatment: String
   prescriptionDrugs: String
+}
+
+input CreateBoxDto {
+  name: String!
+  branchId: Float!
+}
+
+input CreateBranchDto {
+  name: String!
+  address: String!
+  openingTime: String!
+  closingTime: String!
 }
 
 input CreateScheduleDto {
