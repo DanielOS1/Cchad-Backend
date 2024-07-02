@@ -45,7 +45,7 @@ export class BoxService {
   }
 
   async disable(id: number): Promise<Box> {
-    const box = await this.branchRepo.findOneBy({ id });
+    const box = await this.boxRepo.findOneBy({ id });
     if (!box) {
       throw new NotFoundException('');
     }
