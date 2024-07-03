@@ -28,14 +28,14 @@ export class Branch {
   @Field()
   @Column({
     name: 'opening_time',
-    type: 'timetz',
+    type: 'time',
   })
   openingTime: string;
 
   @Field()
   @Column({
     name: 'closing_time',
-    type: 'timetz',
+    type: 'time',
   })
   closingTime: string;
 

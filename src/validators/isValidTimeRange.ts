@@ -6,9 +6,9 @@ import {
 @ValidatorConstraint({ name: 'IsValidTimeRange', async: false })
 export class IsValidTimeRange implements ValidatorConstraintInterface {
   validate(time: string) {
-    // Verifica si 'time' tiene el formato adecuado
+    // Verifica si 'time' tiene el formato adecuado sin zona horaria
     const timeRegex =
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z;\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/; // Formato 'yyyy-MM-ddTHH:mm:ss.SSSZ;yyyy-MM-ddTHH:mm:ss.SSSZ'
+      /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2};\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/; // Formato 'yyyy-MM-dd HH:mm:ss;yyyy-MM-dd HH:mm:ss'
     if (!timeRegex.test(time)) {
       return false;
     }
@@ -30,12 +30,12 @@ export class IsValidTimeRange implements ValidatorConstraintInterface {
   }
 
   defaultMessage() {
-    return 'El rango de tiempo debe estar en el formato "yyyy-MM-ddTHH:mm:ss.SSSZ;yyyy-MM-ddTHH:mm:ss.SSSZ" y el primer tiempo debe ser menor que el segundo.';
+    return 'El rango de tiempo debe estar en el formato "yyyy-MM-dd HH:mm:ss;yyyy-MM-dd HH:mm:ss" y el primer tiempo debe ser menor que el segundo.';
   }
 }
 
 // Función para verificar si una fecha y hora es válida
 function isValidDateTime(dateTime: string): boolean {
-  const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/; // Formato 'yyyy-MM-ddTHH:mm:ss.SSSZ'
+  const dateTimeRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/; // Formato 'yyyy-MM-dd HH:mm:ss'
   return dateTimeRegex.test(dateTime);
 }

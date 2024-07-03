@@ -23,7 +23,7 @@ export class Schedule {
 
   @Field()
   @Column({
-    type: 'tstzrange',
+    type: 'tsrange',
   })
   time: string;
 
@@ -67,10 +67,10 @@ export class Schedule {
 
   @BeforeInsert()
   transformTimeToRange() {
-    // Transformar el string a un formato compatible con tstzrange
-    const [start, end] = this.time
-      .split(';')
-      .map((date) => new Date(date).toISOString());
-    this.time = `[${start},${end})`; // En PostgreSQL, los intervalos cerrados se representan con "[" y ")", lo que significa que el límite inferior está incluido y el límite superior está excluido.
+    // Transformar el string a un formato compatible con tsrange sin convertir la hora
+    const [start, end] = this.time.split(';');
+
+    // Simplemente formatear el rango sin convertir a objetos Date
+    this.time = `[${start},${end})`; // Formato de intervalo cerrado en PostgreSQL
   }
 }
