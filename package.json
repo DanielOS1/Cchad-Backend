@@ -1,6 +1,6 @@
 {
   "name": "cchad-backend",
-  "version": "0.1.0-alpha2.1",
+  "version": "0.1.0-alpha3",
   "description": "Backend de CChad hecho con NestJS.",
   "author": "CChad Team",
   "private": true,
